@@ -1,6 +1,6 @@
 /* CYVE - Global Styles - Based on Figma Design Specs */
 /* Import static homepage styles for exact match */
-@import url('../Homepage/homepage-static.css');
+@import url('./Homepage/homepage-static.css');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@400;700&display=swap');
 
 /* Design Tokens from Figma */

@@ -1,0 +1,10 @@
+:root {
+  --color-primary: #f5be1e;
+  /* Yellow */
+  --color-bg: #000000;
+  --color-card-bg: #1d1b20;
+  --color-text: #ffffff;
+  --color-text-dim: rgba(255, 255, 255, 0.7);
+
+  --font-main: 'Inter', sans-serif;
+}
