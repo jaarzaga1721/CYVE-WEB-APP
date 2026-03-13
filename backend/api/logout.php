@@ -1,5 +1,5 @@
 <?php
-include '../config.php';
+require_once 'middleware.php';
 
 session_unset();
 session_destroy();

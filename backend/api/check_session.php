@@ -1,20 +1,21 @@
 <?php
-include '../config.php';
+require_once 'middleware.php';
 header("Content-Type: application/json");
 
-if (isset($_SESSION['user_id'])) {
-    $stmt = $conn->prepare("SELECT id, email, full_name, username, role FROM users WHERE id = ?");
-    $stmt->bind_param("i", $_SESSION['user_id']);
-    $stmt->execute();
-    $result = $stmt->get_result();
+use CYVE\Repositories\UserRepository;
 
-    if ($result->num_rows === 1) {
-        $user = $result->fetch_assoc();
+if (isset($_SESSION['user_id'])) {
+    $userRepo = new UserRepository($conn);
+    $user = $userRepo->findById($_SESSION['user_id']);
+
+    if ($user) {
         send_response(true, 'Session active', [
             'user' => [
                 'id' => $user['id'],
+                'username' => $user['username'],
+                'display_name' => $user['display_name'],
                 'email' => $user['email'],
-                'name' => $user['full_name'] ? $user['full_name'] : $user['username'],
+                'name' => $user['display_name'] ? $user['display_name'] : strtoupper($user['username']),
                 'role' => $user['role']
             ]
         ]);

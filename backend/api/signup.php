@@ -1,6 +1,7 @@
 <?php
 header("Content-Type: application/json");
-include '../config.php';
+require_once 'middleware.php';
+require_once 'network/utils.php';
 
 $data = json_decode(file_get_contents("php://input"), true);
 
@@ -27,26 +28,27 @@ if (empty($username)) {
 
 $passwordHash = password_hash($passwordRaw, PASSWORD_BCRYPT);
 
-$stmt = $conn->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
-$stmt->bind_param("ss", $email, $username);
-$stmt->execute();
-if ($stmt->get_result()->num_rows > 0) {
+use CYVE\Repositories\UserRepository;
+
+$userRepo = new UserRepository($conn);
+
+if ($userRepo->exists($email, $username)) {
     send_response(false, 'Email or username already exists', [], 409);
 }
 
-$stmt = $conn->prepare("INSERT INTO users (username, email, password, full_name, role) VALUES (?, ?, ?, ?, 'user')");
-$stmt->bind_param("ssss", $username, $email, $passwordHash, $fullName);
+$insertId = $userRepo->create($username, $email, $passwordHash, $fullName);
 
-if ($stmt->execute()) {
-    $userId = $stmt->insert_id;
-    $_SESSION['user_id'] = $userId;
+if ($insertId) {
+    $_SESSION['user_id'] = $insertId;
     $_SESSION['email'] = $email;
     $_SESSION['role'] = 'user';
     $_SESSION['username'] = $username;
 
     send_response(true, 'Registration successful', [
         'user' => [
-            'id' => $userId,
+            'id' => $insertId,
+            'username' => $username,
+            'display_name' => null,
             'email' => $email,
             'name' => $fullName,
             'role' => 'user'

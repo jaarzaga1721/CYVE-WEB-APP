@@ -1,5 +1,5 @@
 <?php
-include '../config.php';
+require_once 'middleware.php';
 
 $data = json_decode(file_get_contents("php://input"), true);
 
@@ -14,19 +14,15 @@ if (strlen($passwordRaw) < 8) {
     send_response(false, 'Password must be at least 8 characters', [], 400);
 }
 
-$stmt = $conn->prepare("SELECT id FROM users WHERE reset_token = ? AND reset_expiry > NOW()");
-$stmt->bind_param("s", $token);
-$stmt->execute();
-$result = $stmt->get_result();
+use CYVE\Repositories\UserRepository;
+$userRepo = new UserRepository($conn);
 
-if ($result->num_rows === 1) {
-    $user = $result->fetch_assoc();
+$user = $userRepo->findByValidResetToken($token);
+
+if ($user) {
     $passwordHash = password_hash($passwordRaw, PASSWORD_BCRYPT);
 
-    $update = $conn->prepare("UPDATE users SET password = ?, reset_token = NULL, reset_expiry = NULL WHERE id = ?");
-    $update->bind_param("si", $passwordHash, $user['id']);
-
-    if ($update->execute()) {
+    if ($userRepo->resetPassword($user['id'], $passwordHash)) {
         send_response(true, 'Password has been reset successfully. You can now login.');
     }
     else {
@@ -36,7 +32,4 @@ if ($result->num_rows === 1) {
 else {
     send_response(false, 'Invalid or expired token', [], 400);
 }
-
-$stmt->close();
-$conn->close();
 ?>

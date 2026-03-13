@@ -1,0 +1,166 @@
+.container {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    max-width: 600px;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.heading {
+    font-size: 0.8125rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    color: #f5a623;
+    margin: 0;
+}
+
+.description {
+    font-size: 0.75rem;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.divider {
+    height: 1px;
+    background: #222;
+}
+
+/* Radio buttons */
+.radioGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.radioLabel {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid #222;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.radioLabel:hover {
+    border-color: #333;
+    background: rgba(255,255,255,0.02);
+}
+
+.radioLabel.active {
+    border-color: rgba(245,166,35,0.4);
+    background: rgba(245,166,35,0.05);
+}
+
+.radioLabel input { display: none; }
+
+.radioText {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #888;
+}
+
+.active .radioText {
+    color: #f5a623;
+}
+
+/* Toggles */
+.toggleGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toggleLabel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.toggleText {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #aaa;
+    letter-spacing: 0.05em;
+}
+
+.toggle {
+    position: relative;
+    width: 44px;
+    height: 22px;
+}
+
+.toggle input { display: none; }
+
+.slider {
+    position: absolute;
+    inset: 0;
+    background: #222;
+    border-radius: 22px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.slider::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    bottom: 4px;
+    width: 14px;
+    height: 14px;
+    background: #444;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+input:checked + .slider { background: rgba(245,166,35,0.3); }
+input:checked + .slider::before {
+    transform: translateX(22px);
+    background: #f5a623;
+    box-shadow: 0 0 8px rgba(245,166,35,0.5);
+}
+
+/* Status */
+.statusMsg {
+    font-size: 0.6875rem;
+    font-weight: 800;
+    color: #4caf50;
+    text-align: center;
+    background: rgba(76, 175, 80, 0.1);
+    padding: 10px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.savingMsg {
+    font-size: 0.625rem;
+    color: #555;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+}
+
+.loading, .error {
+    padding: 60px;
+    text-align: center;
+    color: #555;
+    font-size: 0.75rem;
+    font-family: 'Courier New', monospace;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}

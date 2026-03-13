@@ -68,25 +68,34 @@ export default function RoadmapMap({ companies, userCenter, className }: Roadmap
         return;
       }
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; CARTO',
       }).addTo(map);
 
       if (isCancelled) return;
 
       const goldIcon = L.divIcon({
         className: 'cyve-marker',
-        html: `<span style="
-          width:24px;height:24px;
-          background:#f5be1e;
-          border:3px solid #fff;
-          border-radius:50% 50% 50% 0;
-          transform:rotate(-45deg);
-          display:block;
-          box-shadow:0 2px 6px rgba(0,0,0,0.3);
-        "></span>`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 24],
+        html: `<div style="
+          width:18px;height:18px;
+          background:#f5a623;
+          border:2px solid #000;
+          border-radius:50%;
+          box-shadow: 0 0 15px #f5a623, 0 0 30px rgba(245, 166, 35, 0.5);
+          position:relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        ">
+          <div style="width: 4px; height: 4px; background: #fff; border-radius: 50%;"></div>
+          <div style="
+            position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+            width:36px;height:36px;border:1px solid rgba(245,166,35,0.6);
+            border-radius:50%;animation: pulse 1.5s infinite;
+          "></div>
+        </div>`,
+        iconSize: [18, 18],
+        iconAnchor: [9, 9],
       });
 
       const markers: Leaflet.Marker[] = [];

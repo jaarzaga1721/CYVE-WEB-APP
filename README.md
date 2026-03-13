@@ -4,12 +4,11 @@ A modern web application for cybersecurity education, featuring career path expl
 
 ## 🚀 Features
 
-- **Static Landing Page**: Fast, SEO-friendly homepage with career search
 - **Next.js Application**: Modern React-based web app with server-side rendering
-- **localStorage Authentication**: No server required - works offline
+- **PHP API Backend**: Robust backend for authentication and data persistence
 - **Career Path Explorer**: Search and discover cybersecurity careers
 - **Team Sections**: Red Team, Blue Team, and Purple Team information
-- **Responsive Design**: Mobile-friendly interface
+- **Responsive Design**: Cyber-Premium aesthetic with mobile-friendly interface
 
 ## 📁 Project Structure
 
@@ -17,45 +16,27 @@ A modern web application for cybersecurity education, featuring career path expl
 CYVE/
 ├── frontend/                    # Next.js application
 │   ├── src/
-│   │   ├── app/                # Next.js app directory
-│   │   │   ├── calendar/       # Calendar page
-│   │   │   ├── contact/        # Contact/About page
-│   │   │   ├── league/         # League pages (Red/Blue/Purple teams)
-│   │   │   ├── login/          # Login page
-│   │   │   ├── profile/        # User profile
-│   │   │   ├── roadmap/        # Learning roadmap
-│   │   │   ├── signup/         # Signup page
-│   │   │   ├── layout.tsx      # Root layout
-│   │   │   ├── page.tsx        # Homepage
-│   │   │   └── globals.css     # Global styles
-│   │   ├── components/         # Reusable components
-│   │   │   ├── Header.tsx      # Navigation header
-│   │   │   ├── Footer.tsx      # Footer component
-│   │   │   └── Icons.tsx       # Icon components
-│   │   ├── context/            # React context providers
-│   │   │   ├── AuthContext.tsx # Authentication context
-│   │   │   ├── CalendarContext.tsx
-│   │   │   ├── ProfileContext.tsx
-│   │   │   └── RoadmapContext.tsx
-│   │   └── qpp/                # Page components
-│   │       ├── login/          # Login component
-│   │       └── signup/         # Signup component
-│   ├── public/                 # Static assets
-│   │   └── design-specs/       # Design assets
+│   │   ├── app/                # Next.js app directory (Pages & Layouts)
+│   │   ├── components/         # Reusable UI components
+│   │   ├── context/            # React context providers (Auth, Stats)
+│   │   └── hooks/              # Custom React hooks
+│   ├── public/                 # Static assets (Images, Icons)
+│   │   └── design-specs/       # Figma-exported design assets
 │   ├── package.json            # Dependencies
 │   └── next.config.mjs         # Next.js configuration
 │
-├── backend/                    # PHP backend (optional - not required)
-│   ├── api/                    # API endpoints
-│   └── config.php              # Database configuration
+├── backend/                    # PHP backend API
+│   ├── api/                    # API endpoints (REST)
+│   ├── src/                    # Core business logic (PSR-4)
+│   ├── config.php              # Global configuration
+│   └── scripts/                # Utility and migration scripts
 │
-├── design-specs/               # Design assets and tokens
-│   ├── images/                 # Image assets
-│   └── design-tokens.css       # Design system tokens
+├── database/                   # Database schemas and migrations
+│   └── cyve.sql                # Main SQL database schema
 │
-├── index.html                  # Static landing page
-├── styles.css                  # Landing page styles
-├── script.js                   # Landing page JavaScript
+├── docs/                       # Project documentation & strategy
+│   └── design/                 # High-level design specifications
+│
 └── README.md                   # This file
 ```
 

@@ -12,7 +12,10 @@ import {
   GamepadIcon,
   GraduationIcon,
   SecurityIcon,
-  SkullIcon
+  SkullIcon,
+  TargetIcon,
+  ShieldIcon,
+  MergeIcon
 } from '@/app/Homepage/components/Icons';
 
 function StepIcon({ type }: { type: string }) {
@@ -45,18 +48,6 @@ function RoadmapContent() {
   const { profile, updateProfile } = useProfile();
   const { steps, selectedField, selectField, toggleStepCompletion, getProgress } = useRoadmap();
   const [isSwitching, setIsSwitching] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({
-        x: (e.clientX / window.innerWidth - 0.5) * 20,
-        y: (e.clientY / window.innerHeight - 0.5) * 20,
-      });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   const role: RoleKey | null = isSwitching ? null : (profile.preferredRole ?? selectedField);
 
@@ -72,20 +63,9 @@ function RoadmapContent() {
     setIsSwitching(false);
   };
 
-  const timeline = role ? ROLE_TIMELINES[role] : null;
-  const companies = role ? ROLE_COMPANIES[role] : null;
-  const roleTitle = role ? ROLE_TITLES[role] : null;
-  const stepsMap = new Map(steps.map(s => [s.id, s]));
-
-  return (
-    <div
-      className={styles.page}
-      style={{
-        ['--mouse-x' as any]: `${mousePos.x}px`,
-        ['--mouse-y' as any]: `${mousePos.y}px`
-      }}
-    >
-      {role === null ? (
+  if (role === null) {
+    return (
+      <div className={styles.page}>
         <section className={styles.hero}>
           <div className={styles.hexPattern} aria-hidden />
           <h1 className={styles.mainTitle}>CHOOSE YOUR PATH</h1>
@@ -94,122 +74,195 @@ function RoadmapContent() {
           </p>
           <div className={styles.roleSelector}>
             <button type="button" onClick={() => handleRoleSelect('red')} className={styles.roleBtn}>
-              <span className={styles.roleBtnIcon}>🛡️</span>
-              <span className={styles.roleBtnLabel}>Red Team</span>
+              <span className={styles.roleBtnIcon}>
+                <TargetIcon width={48} height={48} color="#f5a623" />
+              </span>
+              <span className={styles.roleBtnLabel} style={{ color: '#e05252' }}>Red Team</span>
               <span className={styles.roleBtnDesc}>Offensive Security: Penetration testing, exploit development, and simulation.</span>
             </button>
             <button type="button" onClick={() => handleRoleSelect('blue')} className={styles.roleBtn}>
-              <span className={styles.roleBtnIcon}>🏹</span>
-              <span className={styles.roleBtnLabel}>Blue Team</span>
+              <span className={styles.roleBtnIcon}>
+                <ShieldIcon width={48} height={48} color="#f5a623" />
+              </span>
+              <span className={styles.roleBtnLabel} style={{ color: '#4a9eff' }}>Blue Team</span>
               <span className={styles.roleBtnDesc}>Defensive Security: Threat detection, incident response, and infrastructure protection.</span>
             </button>
             <button type="button" onClick={() => handleRoleSelect('purple')} className={styles.roleBtn}>
-              <span className={styles.roleBtnIcon}>⚡</span>
-              <span className={styles.roleBtnLabel}>Purple Team</span>
+              <span className={styles.roleBtnIcon}>
+                <MergeIcon width={48} height={48} color="#f5a623" />
+              </span>
+              <span className={styles.roleBtnLabel} style={{ color: '#9b59f5' }}>Purple Team</span>
               <span className={styles.roleBtnDesc}>Hybrid Strategy: Bridging the gap between offensive and defensive operations.</span>
             </button>
           </div>
         </section>
-      ) : (
-        <>
-          <section className={styles.hero}>
-            <div className={styles.hexPattern} aria-hidden />
-            <h1 className={styles.mainTitle}>ROADMAP</h1>
-            <p className={styles.roleSubtitle}>{roleTitle}</p>
-            <div className={styles.heroActions}>
-              <button className={styles.changeRoleBtn} onClick={() => setIsSwitching(true)}>
-                Change Specialization
-              </button>
+      </div>
+    );
+  }
+
+  const timeline = ROLE_TIMELINES[role];
+  const companies = ROLE_COMPANIES[role];
+  const roleTitle = ROLE_TITLES[role];
+  const stepsMap = new Map(steps.map(s => [s.id, s]));
+
+  const firstIncompleteIndex = steps.findIndex(s => !s.completed);
+
+  return (
+    <div className={styles.page}>
+      <section className={styles.hero}>
+        <div className={styles.hexPattern} aria-hidden />
+        <h1 className={styles.mainTitle}>ROADMAP</h1>
+        <p className={styles.roleSubtitle}>{roleTitle}</p>
+        <div className={styles.heroActions}>
+          <button className={styles.changeRoleBtn} onClick={() => setIsSwitching(true)}>
+            Change Specialization
+          </button>
+        </div>
+        <div className={styles.progressWrap}>
+          <span className={styles.progressLabel}>Current Operative Progress</span>
+          {getProgress() === 0 ? (
+            <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', borderLeft: '3px solid #f5a623', textAlign: 'center' }}>
+                <p style={{ color: '#fff', margin: '0 0 1rem 0' }}>Your mission hasn&apos;t started yet.</p>
+                <button 
+                  onClick={() => window.scrollTo({ top: 500, behavior: 'smooth' })} 
+                  className={styles.changeRoleBtn} 
+                  style={{ display: 'inline-block' }}
+                >
+                  Begin Mission →
+                </button>
             </div>
-            <div className={styles.progressWrap}>
-              <span className={styles.progressLabel}>Current Operative Progress</span>
+          ) : (
+            <>
               <div className={styles.progressBar}>
                 <div className={styles.progressFill} style={{ width: `${getProgress()}%` }} />
               </div>
               <span className={styles.progressPercent}>{getProgress()}%</span>
-            </div>
-          </section>
+            </>
+          )}
+        </div>
+      </section>
 
-          <section className={styles.overviewSection}>
-            <h2 className={styles.overviewTitle}>About this path</h2>
-            <p className={styles.overviewText}>{ROLE_OVERVIEW[role]}</p>
-          </section>
+      <section className={styles.overviewSection}>
+        <h2 className={styles.overviewTitle}>
+            {role === 'red' ? 'RED TEAM OPERATIVE BRIEF' : role === 'blue' ? 'BLUE TEAM DEFENSIVE BRIEF' : 'PURPLE TEAM HYBRID BRIEF'}
+        </h2>
+        <p className={styles.overviewText}>{ROLE_OVERVIEW[role]}</p>
+      </section>
 
-          <section className={styles.skillsCertSection}>
-            <div className={styles.skillsCertGrid}>
-              <div className={styles.skillsCertCard}>
-                <h3 className={styles.skillsCertHeading}>Skills you&apos;ll gain</h3>
-                <ul className={styles.skillsList}>
-                  {ROLE_SKILLS[role].map((skill, i) => (
-                    <li key={i}>{skill}</li>
-                  ))}
-                </ul>
-              </div>
-              <div className={styles.skillsCertCard}>
-                <h3 className={styles.skillsCertHeading}>Certifications to consider</h3>
-                <ul className={styles.skillsList}>
-                  {ROLE_CERTIFICATIONS[role].map((cert, i) => (
-                    <li key={i}>{cert}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </section>
-
-          <section className={styles.timelineSection}>
-            <div className={styles.timeline}>
-              {timeline && timeline.map((config: any, index: number) => (
-                <div key={config.stepLabel + index} className={styles.step}>
-                  <span className={styles.stepLabel}>{config.stepLabel}</span>
-                  <span className={styles.stepSubtitle}>{config.subtitle}</span>
-                  <div className={styles.stepIcon}>
-                    <StepIcon type={config.icon} />
-                  </div>
-                  <div className={styles.stepContentBlocks}>
-                    {config.stepIds.map((stepId: string) => {
-                      const step = stepsMap.get(stepId);
-                      const extra = STEP_EXTRA[stepId];
-                      if (!step) return <div key={stepId} className={styles.contentBlock} />;
-                      return (
-                        <ContentBlock key={step.id} step={step} extra={extra} onToggle={() => toggleStepCompletion(step.id)} />
-                      );
-                    })}
-                  </div>
-                </div>
+      <section className={styles.skillsCertSection}>
+        <div className={styles.skillsCertGrid}>
+          <div className={styles.skillsCertCard}>
+            <h3 className={styles.skillsCertHeading}>Skills you&apos;ll gain</h3>
+            <ul className={styles.skillsList}>
+              {ROLE_SKILLS[role].map((skill, i) => (
+                <li key={i}>{skill}</li>
               ))}
-            </div>
-          </section>
+            </ul>
+          </div>
+          <div className={styles.skillsCertCard}>
+            <h3 className={styles.skillsCertHeading}>Certifications to consider</h3>
+            <ul className={styles.skillsList}>
+              {ROLE_CERTIFICATIONS[role].map((cert, i) => {
+                const upper = cert.toUpperCase();
+                let badgeBg = '';
+                let badgeColor = '';
+                let badgeText = '';
+                
+                if (upper.includes('COMPTIA') || upper.includes('EJPT')) { 
+                    badgeBg = 'rgba(76, 175, 80, 0.2)'; badgeColor = '#4caf50'; badgeText = 'Beginner'; 
+                } else if (upper.includes('CEH') || upper.includes('PNPT')) { 
+                    badgeBg = 'rgba(245, 166, 35, 0.2)'; badgeColor = '#f5a623'; badgeText = 'Intermediate'; 
+                } else if (upper.includes('OSCP')) { 
+                    badgeBg = 'rgba(229, 57, 53, 0.2)'; badgeColor = '#e53935'; badgeText = 'Advanced'; 
+                }
 
-          <section className={styles.mapSection}>
-            <p className={styles.mapSectionLabel}>Career map — recommended companies by location</p>
-            <RoadmapMap companies={companies || []} />
-          </section>
+                return (
+                  <li key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '1rem' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        {cert}
+                    </span>
+                    {badgeText && (
+                      <span style={{ 
+                        backgroundColor: badgeBg, color: badgeColor, 
+                        border: `1px solid ${badgeColor}`, borderRadius: '12px', 
+                        padding: '2px 8px', fontSize: '0.7rem', fontWeight: 'bold' 
+                      }}>
+                        {badgeText}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      </section>
 
-          <section className={styles.companiesSection}>
-            <h2 className={styles.companiesTitle}>RECOMMENDED COMPANIES</h2>
-            <p className={styles.companiesSubtitle}>Companies hiring for {role === 'red' ? 'offensive' : role === 'blue' ? 'defensive' : 'hybrid'} security roles</p>
-            <div className={styles.companiesList}>
-              {companies && companies.map((company, i) => (
-                <div key={i} className={styles.companyCard}>
-                  <p className={styles.companyName}>{company.name}</p>
-                  <p className={styles.companyAddress}>{company.address}</p>
-                  <p className={styles.companyDescription}>{company.description}</p>
-                  {company.roles && company.roles.length > 0 && (
-                    <p className={styles.companyRoles}>
-                      <strong>Example roles:</strong> {company.roles.join(' · ')}
-                    </p>
-                  )}
-                  {company.website && (
-                    <a href={company.website} target="_blank" rel="noopener noreferrer" className={styles.companyLink}>
-                      Learn more & careers →
-                    </a>
-                  )}
-                </div>
-              ))}
+      <section className={styles.timelineSection}>
+        <div className={styles.timeline}>
+          {timeline.map((config, index) => (
+            <div key={config.stepLabel + index} className={styles.step}>
+              <span className={styles.stepLabel}>{config.stepLabel}</span>
+              <span className={styles.stepSubtitle}>{config.subtitle}</span>
+              <div className={styles.stepIcon}>
+                <StepIcon type={config.icon} />
+              </div>
+              <div className={styles.stepContentBlocks}>
+                {config.stepIds.map(stepId => {
+                  const step = stepsMap.get(stepId);
+                  const extra = STEP_EXTRA[stepId];
+                  if (!step) return <div key={stepId} className={styles.contentBlock} />;
+                  
+                  const stepIndex = steps.findIndex(s => s.id === step.id);
+                  const isLocked = firstIncompleteIndex !== -1 && stepIndex > firstIncompleteIndex;
+                  const isActive = stepIndex === firstIncompleteIndex;
+
+                  return (
+                    <ContentBlock 
+                      key={step.id} 
+                      step={step} 
+                      extra={extra} 
+                      isLocked={isLocked}
+                      isActive={isActive}
+                      onToggle={() => toggleStepCompletion(step.id)} 
+                    />
+                  );
+                })}
+
+              </div>
             </div>
-          </section>
-        </>
-      )}
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.mapSection}>
+        <p className={styles.mapSectionLabel}>Career map — recommended companies by location</p>
+        <RoadmapMap companies={companies} />
+      </section>
+
+      <section className={styles.companiesSection}>
+        <h2 className={styles.companiesTitle}>RECOMMENDED COMPANIES</h2>
+        <p className={styles.companiesSubtitle}>Companies hiring for {role === 'red' ? 'offensive' : role === 'blue' ? 'defensive' : 'hybrid'} security roles</p>
+        <div className={styles.companiesList}>
+          {companies.map((company, i) => (
+            <div key={i} className={styles.companyCard}>
+              <p className={styles.companyName}>{company.name}</p>
+              <p className={styles.companyAddress}>{company.address}</p>
+              <p className={styles.companyDescription}>{company.description}</p>
+              {company.roles && company.roles.length > 0 && (
+                <p className={styles.companyRoles}>
+                  <strong>Example roles:</strong> {company.roles.join(' · ')}
+                </p>
+              )}
+              {company.website && (
+                <a href={company.website} target="_blank" rel="noopener noreferrer" className={styles.companyLink}>
+                  Learn more & careers →
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
@@ -217,16 +270,28 @@ function RoadmapContent() {
 function ContentBlock({
   step,
   extra,
+  isLocked,
+  isActive,
   onToggle,
 }: {
   step: RoadmapStep;
   extra?: { duration: string; skills: string[]; resources: { label: string; url: string }[] };
+  isLocked: boolean;
+  isActive: boolean;
   onToggle: () => void;
 }) {
+  let blockClass = styles.contentBlock;
+  if (step.completed) blockClass = `${styles.contentBlock} ${styles.contentBlockDone}`;
+  else if (isLocked) blockClass = `${styles.contentBlock} ${styles.contentBlockLocked}`;
+  else if (isActive) blockClass = `${styles.contentBlock} ${styles.contentBlockActive}`;
+
   return (
-    <div className={`${styles.contentBlock} ${step.completed ? styles.contentBlockDone : ''}`}>
+    <div className={blockClass}>
       <div className={styles.contentBlockInner}>
-        <span className={styles.contentBlockTitle}>{step.title}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className={styles.contentBlockTitle}>{step.title}</span>
+            {isLocked && <span style={{ fontSize: '1.2rem', opacity: 0.5 }} title="Locked">🔒</span>}
+        </div>
         <p className={styles.contentBlockDesc}>{step.description}</p>
         {extra && (
           <>
@@ -250,13 +315,16 @@ function ContentBlock({
             )}
           </>
         )}
-        <button
-          type="button"
-          onClick={onToggle}
-          className={step.completed ? styles.btnCompleteDone : styles.btnComplete}
-        >
-          {step.completed ? '✓ Completed' : 'Mark complete'}
-        </button>
+        {!isLocked && (
+          <button
+            type="button"
+            onClick={onToggle}
+            className={step.completed ? styles.btnCompleteDone : styles.btnComplete}
+          >
+            {step.completed ? '✓ Completed' : 'Mark complete'}
+          </button>
+        )}
+        {isLocked && <span className={styles.lockedLabel}>[ LOCKED ]</span>}
       </div>
     </div>
   );

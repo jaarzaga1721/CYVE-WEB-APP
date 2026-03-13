@@ -1,0 +1,215 @@
+/* CYVE - Premium Signup Design System */
+.authPage {
+    --primary: var(--color-gold);
+    --primary-dark: var(--color-gold-dark);
+    --primary-glow: var(--color-gold-glow);
+    --bg-black: var(--color-black);
+    --bg-dark: var(--color-dark);
+    --card-bg: var(--color-card);
+    --border-color: var(--color-border);
+    --text-main: var(--color-text);
+    --text-dim: var(--color-text-dim);
+    --error-red: var(--color-error);
+    --success-green: var(--color-success);
+    --glass-bg: var(--color-glass);
+    --glass-border: rgba(255, 255, 255, 0.1);
+
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--bg-black);
+    background-image: 
+        radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000000 100%),
+        linear-gradient(rgba(245, 190, 30, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245, 190, 30, 0.05) 1px, transparent 1px);
+    background-size: 100% 100%, 50px 50px, 50px 50px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Montserrat', 'Inter', sans-serif;
+}
+
+/* Background scanning line effect */
+.authPage::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 1;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+}
+
+.authCard {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 500px;
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 48px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(245, 190, 30, 0.1);
+    animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.authHeader {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.authHeader h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--primary);
+    margin: 0;
+    letter-spacing: 0.5rem;
+    text-shadow: 0 0 15px var(--primary-glow);
+    text-transform: uppercase;
+}
+
+.authHeader p {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.formGroup {
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.formGroup label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.formGroup input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.formGroup input::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.btnSignup {
+    width: 100%;
+    padding: 16px;
+    background: var(--primary);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 0px var(--primary-glow);
+}
+
+.btnSignup:hover:not(:disabled) {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(245, 190, 30, 0.2);
+}
+
+.btnSignup:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btnSignup:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+}
+
+.message {
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.error {
+    background: rgba(255, 77, 77, 0.1);
+    border: 1px solid var(--error-red);
+    color: var(--error-red);
+}
+
+.success {
+    background: rgba(0, 255, 157, 0.1);
+    border: 1px solid var(--success-green);
+    color: var(--success-green);
+}
+
+.authFooter {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+.authFooter a {
+    color: var(--primary);
+    font-weight: 700;
+    margin-left: 5px;
+    transition: all 0.2s;
+}
+
+.authFooter a:hover {
+    color: var(--primary-dark);
+    text-shadow: 0 0 5px var(--primary-glow);
+}
+
+@media (max-width: 480px) {
+    .authCard {
+        padding: 32px 24px;
+    }
+    
+    .authHeader h1 {
+        font-size: 2.2rem;
+    }
+}

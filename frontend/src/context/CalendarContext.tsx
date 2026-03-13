@@ -1,6 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useAuth } from './AuthContext';
+import { useApi } from '../hooks/useApi';
 
 export interface CalendarTask {
     id: string;
@@ -9,6 +11,7 @@ export interface CalendarTask {
     description: string;
     completed: boolean;
     notes: string;
+    priority?: 'LOW' | 'MEDIUM' | 'HIGH';
 }
 
 interface CalendarContextType {
@@ -23,73 +26,127 @@ interface CalendarContextType {
 const CalendarContext = createContext<CalendarContextType | undefined>(undefined);
 
 export function CalendarProvider({ children }: { children: ReactNode }) {
+    const { isAuthenticated } = useAuth();
+    const { callApi } = useApi();
     const [tasks, setTasks] = useState<CalendarTask[]>([]);
 
+    // Initial Load & Migration
     useEffect(() => {
-        const storedTasks = localStorage.getItem('cyve_calendar_tasks');
-        if (storedTasks) {
-            setTasks(JSON.parse(storedTasks));
+        const loadCalendar = async () => {
+            const storedTasks = localStorage.getItem('cyve_calendar_tasks');
+
+            if (isAuthenticated) {
+                // Try to load from server
+                const result = await callApi('events.php');
+                if (result.success && result.data?.events) {
+                    // Map backend fields to frontend interface
+                    const serverTasks = result.data.events.map((e: any) => ({
+                        id: e.id.toString(),
+                        date: e.event_date.split(' ')[0], // Remove time if present
+                        title: e.title,
+                        description: e.description,
+                        completed: e.status === 'approved', // Mapping status to completed for now
+                        notes: '',
+                        priority: 'MEDIUM'
+                    }));
+                    setTasks(serverTasks);
+
+                    // Migration logic
+                    if (storedTasks && serverTasks.length === 0) {
+                        const localTasks = JSON.parse(storedTasks);
+                        for (const task of localTasks) {
+                            await callApi('events.php', {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    title: task.title,
+                                    description: task.description,
+                                    event_date: task.date,
+                                    location: 'HQ'
+                                })
+                            });
+                        }
+                        // Re-fetch after migration
+                        const refreshed = await callApi('events.php');
+                        if (refreshed.success) {
+                            setTasks(refreshed.data.events.map((e: any) => ({
+                                id: e.id.toString(),
+                                date: e.event_date.split(' ')[0],
+                                title: e.title,
+                                description: e.description,
+                                completed: e.status === 'approved',
+                                notes: '',
+                                priority: 'MEDIUM'
+                            })));
+                        }
+                    }
+                }
+            } else {
+                // Guests
+                if (storedTasks) {
+                    setTasks(JSON.parse(storedTasks));
+                } else {
+                    // Sample tasks for new guests
+                    const today = new Date();
+                    const tomorrow = new Date(today);
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    const sampleTasks: CalendarTask[] = [
+                        { id: '1', date: today.toISOString().split('T')[0], title: 'System Diagnostics', description: 'Run initial security sweep', completed: false, notes: '', priority: 'HIGH' },
+                        { id: '2', date: tomorrow.toISOString().split('T')[0], title: 'Firewall Audit', description: 'Patch detected vulnerabilities', completed: false, notes: '', priority: 'MEDIUM' },
+                    ];
+                    setTasks(sampleTasks);
+                    localStorage.setItem('cyve_calendar_tasks', JSON.stringify(sampleTasks));
+                }
+            }
+        };
+
+        loadCalendar();
+    }, [isAuthenticated, callApi]);
+
+    const addTask = async (task: Omit<CalendarTask, 'id'>) => {
+        if (isAuthenticated) {
+            const result = await callApi('events.php', {
+                method: 'POST',
+                body: JSON.stringify({
+                    title: task.title,
+                    description: task.description,
+                    event_date: task.date
+                })
+            });
+            if (result.success) {
+                const newTask = { ...task, id: result.data.id.toString() };
+                setTasks((prev: CalendarTask[]) => [...prev, newTask]);
+            }
         } else {
-            // Initialize with some sample tasks
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const nextWeek = new Date(today);
-            nextWeek.setDate(nextWeek.getDate() + 7);
-
-            const sampleTasks: CalendarTask[] = [
-                {
-                    id: '1',
-                    date: today.toISOString().split('T')[0],
-                    title: 'Complete Cybersecurity Fundamentals',
-                    description: 'Finish the first module',
-                    completed: false,
-                    notes: '',
-                },
-                {
-                    id: '2',
-                    date: tomorrow.toISOString().split('T')[0],
-                    title: 'Networking Quiz',
-                    description: 'Take the TCP/IP quiz',
-                    completed: false,
-                    notes: '',
-                },
-                {
-                    id: '3',
-                    date: nextWeek.toISOString().split('T')[0],
-                    title: 'Start Penetration Testing',
-                    description: 'Begin the ethical hacking module',
-                    completed: false,
-                    notes: '',
-                },
-            ];
-            setTasks(sampleTasks);
-            localStorage.setItem('cyve_calendar_tasks', JSON.stringify(sampleTasks));
+            const newTask = { ...task, id: Date.now().toString() };
+            const updated = [...tasks, newTask];
+            setTasks(updated);
+            localStorage.setItem('cyve_calendar_tasks', JSON.stringify(updated));
         }
-    }, []);
-
-    const saveTasks = (newTasks: CalendarTask[]) => {
-        setTasks(newTasks);
-        localStorage.setItem('cyve_calendar_tasks', JSON.stringify(newTasks));
     };
 
-    const addTask = (task: Omit<CalendarTask, 'id'>) => {
-        const newTask: CalendarTask = {
-            ...task,
-            id: Date.now().toString(),
-        };
-        saveTasks([...tasks, newTask]);
+    const deleteTask = async (id: string) => {
+        if (isAuthenticated) {
+            await callApi('events.php', {
+                method: 'DELETE',
+                body: JSON.stringify({ id })
+            });
+            setTasks((prev: CalendarTask[]) => prev.filter((t: CalendarTask) => t.id !== id));
+        } else {
+            const updated = tasks.filter(task => task.id !== id);
+            setTasks(updated);
+            localStorage.setItem('cyve_calendar_tasks', JSON.stringify(updated));
+        }
     };
 
     const updateTask = (id: string, updates: Partial<CalendarTask>) => {
-        const updatedTasks = tasks.map(task =>
+        // Simple client-side update for now, could add PUT to backend later
+        const updatedTasks = tasks.map((task: CalendarTask) =>
             task.id === id ? { ...task, ...updates } : task
         );
-        saveTasks(updatedTasks);
-    };
-
-    const deleteTask = (id: string) => {
-        saveTasks(tasks.filter(task => task.id !== id));
+        setTasks(updatedTasks);
+        if (!isAuthenticated) {
+            localStorage.setItem('cyve_calendar_tasks', JSON.stringify(updatedTasks));
+        }
     };
 
     const getTasksForDate = (date: string) => {
@@ -97,10 +154,10 @@ export function CalendarProvider({ children }: { children: ReactNode }) {
     };
 
     const toggleTaskCompletion = (id: string) => {
-        const updatedTasks = tasks.map(task =>
-            task.id === id ? { ...task, completed: !task.completed } : task
-        );
-        saveTasks(updatedTasks);
+        const task = tasks.find(t => t.id === id);
+        if (task) {
+            updateTask(id, { completed: !task.completed });
+        }
     };
 
     return (

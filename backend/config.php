@@ -1,69 +1,60 @@
 <?php
-// Database configuration
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'cyve');
+/**
+ * CYVE Backend Core Configuration & Middleware
+ * Handles environment loading, DB connection, CORS, and response utilities.
+ */
 
-// Create connection
+// 0. Error reporting: suppress for production, show for dev
+$is_prod = (getenv('APP_ENV') === 'production');
+if ($is_prod) {
+    error_reporting(0);
+    ini_set('display_errors', '0');
+    ini_set('log_errors', '1');
+    ini_set('error_log', __DIR__ . '/logs/php_errors.log');
+} else {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+}
+
+// 1. Load Composer Autoloader (which includes Dotenv)
+require_once __DIR__ . '/vendor/autoload.php';
+
+// 2. Load Environment Variables via Dotenv
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+// 2. Database configuration from $_ENV
+define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
+define('DB_USER', $_ENV['DB_USER'] ?? 'root');
+define('DB_PASS', $_ENV['DB_PASS'] ?? '');
+define('DB_NAME', $_ENV['DB_NAME'] ?? 'cyve');
+
+// 3. Create connection
 $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
-// CORS Handling
-$allowed_origins = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://localhost:3002",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:3001",
-    "http://127.0.0.1:3002"
-];
-
-if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins, true)) {
-    header("Access-Control-Allow-Origin: " . $_SERVER['HTTP_ORIGIN']);
-    header("Access-Control-Allow-Credentials: true");
-    header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-}
-
-// Handle preflight
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
-// Check connection
+// 5. Check connection
 if ($conn->connect_error) {
     header('Content-Type: application/json');
-    die(json_encode(["success" => false, "message" => "Database connection failed"]));
+    die(json_encode([
+        "success" => false, 
+        "message" => "Database connection failed",
+        "timestamp" => time(),
+        "request_id" => uniqid('err_')
+    ]));
 }
 
-// Secure Session Configuration
-ini_set('session.cookie_httponly', 1);
-ini_set('session.use_only_cookies', 1);
-ini_set('session.cookie_samesite', 'Lax');
-// ini_set('session.cookie_secure', 1); // Enable if using HTTPS
-
-session_start();
-
-// Helper to send JSON response
-function send_response($success, $message, $data = [], $code = 200)
-{
-    http_response_code($code);
-    echo json_encode(array_merge([
-        'success' => $success,
-        'message' => $message
-    ], $data));
-    exit();
-}
-
-// Function to sanitize input
+/**
+ * Sanitize input to prevent SQL Injection
+ */
 function sanitize($data)
 {
     global $conn;
     return mysqli_real_escape_string($conn, trim($data));
 }
 
-// Function to log activity
+/**
+ * Log activity to the audit database
+ */
 function log_activity($user_id, $action, $details = '')
 {
     global $conn;
