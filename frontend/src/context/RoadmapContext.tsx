@@ -1,6 +1,7 @@
-'use client';
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useAuth } from './AuthContext';
+import { useApi } from '../hooks/useApi';
+import { useProfile } from './ProfileContext';
 
 export interface RoadmapStep {
     id: string;
@@ -36,19 +37,61 @@ const defaultSteps: RoadmapStep[] = [
 const RoadmapContext = createContext<RoadmapContextType | undefined>(undefined);
 
 export function RoadmapProvider({ children }: { children: ReactNode }) {
+    const { isAuthenticated } = useAuth();
+    const { callApi } = useApi();
+    const { profile } = useProfile();
     const [steps, setSteps] = useState<RoadmapStep[]>(defaultSteps);
     const [selectedField, setSelectedField] = useState<'red' | 'blue' | 'purple' | null>(null);
 
+    // Sync selectedField with user profile if authenticated
     useEffect(() => {
-        const storedSteps = localStorage.getItem('cyve_roadmap_steps');
-        if (storedSteps) {
-            setSteps(JSON.parse(storedSteps));
+        if (isAuthenticated && profile?.preferredRole) {
+            setSelectedField(profile.preferredRole);
         }
-        const storedField = localStorage.getItem('cyve_selected_field');
-        if (storedField) {
-            setSelectedField(storedField as 'red' | 'blue' | 'purple');
+    }, [isAuthenticated, profile?.preferredRole]);
+    useEffect(() => {
+        const loadRoadmap = async () => {
+            const storedSteps = localStorage.getItem('cyve_roadmap_steps');
+            const storedField = localStorage.getItem('cyve_selected_field');
+
+            if (isAuthenticated) {
+                // Try to load from server
+                const result = await callApi('roadmaps.php');
+                if (result.success && result.data?.steps) {
+                    setSteps(result.data.steps);
+                } else if (storedSteps) {
+                    // Migration: If server is empty but local has data, sync local to server
+                    const localSteps = JSON.parse(storedSteps);
+                    await callApi('roadmaps.php', {
+                        method: 'POST',
+                        body: JSON.stringify({ steps: localSteps })
+                    });
+                    setSteps(localSteps);
+                }
+            } else {
+                // Fallback to local storage for guests
+                if (storedSteps) setSteps(JSON.parse(storedSteps));
+            }
+
+            if (storedField) {
+                setSelectedField(storedField as 'red' | 'blue' | 'purple');
+            }
+        };
+
+        loadRoadmap();
+    }, [isAuthenticated, callApi]);
+
+    const saveChanges = async (newSteps: RoadmapStep[]) => {
+        setSteps(newSteps);
+        if (isAuthenticated) {
+            await callApi('roadmaps.php', {
+                method: 'POST',
+                body: JSON.stringify({ steps: newSteps })
+            });
+        } else {
+            localStorage.setItem('cyve_roadmap_steps', JSON.stringify(newSteps));
         }
-    }, []);
+    };
 
     const selectField = (field: 'red' | 'blue' | 'purple') => {
         setSelectedField(field);
@@ -59,8 +102,7 @@ export function RoadmapProvider({ children }: { children: ReactNode }) {
         const updatedSteps = steps.map(step =>
             step.id === stepId ? { ...step, completed: !step.completed } : step
         );
-        setSteps(updatedSteps);
-        localStorage.setItem('cyve_roadmap_steps', JSON.stringify(updatedSteps));
+        saveChanges(updatedSteps);
     };
 
     const getProgress = () => {

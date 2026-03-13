@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* CYVE - Global Styles - Based on Figma Design Specs */
 /* Import static homepage styles for exact match */
 @import url('./Homepage/homepage-static.css');
@@ -234,4 +235,289 @@ ol {
         --font-size-3xl: 2rem;
         --font-size-4xl: 2.5rem;
     }
+=======
+/* CYVE - Global Styles - Based on Figma Design Specs */
+/* Import static homepage styles for exact match */
+@import url('./Homepage/homepage-static.css');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Inter:wght@400;700&display=swap');
+
+/* Design Tokens from Figma */
+:root {
+    /* Absolute Rules - Prime Directive */
+    --color-bg:               #0a0a0a;
+    --color-surface:          #1a1a1a;
+    --color-surface-2:        #2a2a2a;
+    --color-gold:             #f5a623;
+    --color-gold-dim:         #c8861a;
+    --color-gold-glow:        rgba(245, 166, 35, 0.12);
+    --color-gold-border:      rgba(245, 166, 35, 0.3);
+    --color-text:             #ffffff;
+    --color-text-muted:       #888888;
+    --color-border:           #2a2a2a;
+    --color-red-team:         #e05252;
+    --color-blue-team:        #4a9eff;
+    --color-purple-team:      #9b59f5;
+    --color-success:          #4caf50;
+    --color-danger:           #e53935;
+    --color-terminal-text:    #f5a623;
+    --color-terminal-bg:      #0d0d0d;
+    --color-terminal-border:  rgba(245, 166, 35, 0.2);
+
+    /* Typography */
+    --font-family-primary: 'Montserrat', 'Inter', sans-serif;
+}
+
+/* Reset & Base Styles */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-family-primary);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.4;
+    overflow-x: hidden;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+a:hover {
+    opacity: 0.8;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    transition: all var(--transition-base);
+}
+
+input,
+textarea,
+select {
+    font-family: inherit;
+    font-size: inherit;
+    background: var(--color-surface-2) !important;
+    border: 1px solid var(--color-gold-border) !important;
+    border-radius: 6px;
+    color: #ffffff;
+    padding: 10px 14px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border: 1px solid var(--color-gold) !important;
+    box-shadow: 0 0 0 2px var(--color-gold-glow);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+ul,
+ol {
+    list-style: none;
+}
+
+/* Utility Classes */
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+}
+
+.glass-card {
+    background: var(--color-card);
+    backdrop-filter: var(--blur-glass);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card), 0 0 20px var(--color-gold-dim);
+}
+
+.cyber-button {
+    background: var(--color-gold);
+    color: var(--color-black);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all var(--transition-base);
+    box-shadow: 0 0 0 transparent;
+}
+
+.cyber-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px var(--color-gold-glow), 0 0 30px var(--color-gold-glow);
+}
+
+.cyber-button-outline {
+    background: transparent;
+    border: 1px solid var(--color-gold);
+    color: var(--color-gold);
+}
+
+.cyber-button-outline:hover {
+    background: var(--color-gold-dim);
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+@keyframes holographicFlicker {
+    0% { opacity: 0.9; text-shadow: 0 0 10px var(--color-gold-glow); }
+    5% { opacity: 0.4; text-shadow: none; }
+    10% { opacity: 0.9; text-shadow: 0 0 10px var(--color-gold-glow); }
+    15% { opacity: 1; text-shadow: 0 0 20px var(--color-gold-glow); }
+    20% { opacity: 0.9; text-shadow: 0 0 10px var(--color-gold-glow); }
+    100% { opacity: 1; text-shadow: 0 0 15px var(--color-gold-glow); }
+}
+
+@keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+.terminal-header-animate {
+    animation: holographicFlicker 2s infinite;
+}
+
+@keyframes glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 5px rgba(245, 190, 30, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(245, 190, 30, 0.8);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.slide-in {
+    animation: slideIn 0.5s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    :root {
+        --font-size-3xl: 2.5rem;
+        --font-size-4xl: 4rem;
+    }
+
+    .container {
+        padding: 0 var(--spacing-md);
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --font-size-xl: 1.5rem;
+        --font-size-2xl: 2rem;
+        --font-size-3xl: 2rem;
+        --font-size-4xl: 2.5rem;
+    }
+}
+
+@keyframes activePulse {
+    0%,100% { border-color: #f5a623; box-shadow: 0 0 20px rgba(245,166,35,0.15); }
+    50%      { border-color: #c8861a; box-shadow: 0 0 30px rgba(245,166,35,0.25); }
+}
+
+.leaflet-tile {
+    outline: 1px solid transparent;
+}
+
+input[type="checkbox"] { 
+    appearance: none; 
+    width: 16px; 
+    height: 16px;
+    border: 1px solid var(--color-gold); 
+    border-radius: 3px; 
+    background: var(--color-surface-2);
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+input[type="checkbox"]:checked { 
+    background: var(--color-gold);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+    background-size: 80%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.resource-link {
+    color: var(--color-gold) !important;
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(245, 166, 35, 0.4);
+}
+
+.resource-link:hover {
+    opacity: 0.8;
+    border-bottom-style: solid;
+>>>>>>> d363f03 (Refactor: project structure reorganization, cleanup of legacy files, and fix for fetch failure)
 }

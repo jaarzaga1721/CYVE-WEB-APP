@@ -16,8 +16,12 @@ npm install
 # 3. Start development server
 npm run dev
 
-# 4. Open in browser
-# Visit: http://localhost:3001
+# 4. Start backend server (In a NEW terminal)
+# From the project root (CYVE-WEB-APP)
+php -S localhost:8000
+
+# 5. Open in browser
+# Visit: http://localhost:3000
 ```
 
 ### Option 2: Run Static Landing Page

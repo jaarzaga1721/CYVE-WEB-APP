@@ -1,9 +1,56 @@
 .page {
     min-height: 100vh;
-    background-color: #000000;
+    background-color: #000;
     position: relative;
     overflow: hidden;
-    padding: 3rem 0;
+    padding: 8rem 0 3rem;
+    transition: background 1s ease;
+    --team-glow: var(--color-gold-glow);
+}
+
+.page::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, var(--team-glow) 0%, transparent 70%);
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 1;
+    transition: background 1s ease;
+}
+
+/* scan lines effect */
+.scanLines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        rgba(18, 16, 16, 0) 50%,
+        rgba(0, 0, 0, 0.2) 50%
+    );
+    background-size: 100% 4px;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.01;
+    animation: scanlineMove 10s linear infinite, crtFlicker 0.15s infinite;
+}
+
+@keyframes scanlineMove {
+    from { background-position: 0 0; }
+    to { background-position: 0 100%; }
+}
+
+@keyframes crtFlicker {
+    0% { opacity: 0.08; }
+    50% { opacity: 0.06; }
+    100% { opacity: 0.08; }
 }
 
 /* Cybersecurity Dotted Pattern Background */
@@ -33,47 +80,22 @@
             transparent,
             transparent 2px,
             rgba(245, 190, 30, 0.03) 2px,
-            rgba(245, 190, 30, 0.03) 4px),
+            var(--color-gold-dim) 4px),
         repeating-linear-gradient(90deg,
             transparent,
             transparent 2px,
             rgba(245, 190, 30, 0.03) 2px,
             rgba(245, 190, 30, 0.03) 4px);
     background-size: 50px 50px;
-    opacity: 0.5;
-}
-
-.backgroundPattern::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image:
-        radial-gradient(circle, rgba(245, 190, 30, 0.1) 1px, transparent 1px),
-        radial-gradient(circle, rgba(245, 190, 30, 0.1) 1px, transparent 1px);
-    background-size: 30px 30px;
-    background-position: 0 0, 15px 15px;
-    animation: patternMove 20s linear infinite;
-}
-
-@keyframes patternMove {
-    0% {
-        background-position: 0 0, 15px 15px;
-    }
-
-    100% {
-        background-position: 30px 30px, 45px 45px;
-    }
+    opacity: 0.01;
 }
 
 .container {
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
     position: relative;
-    z-index: 1;
+    z-index: 10;
 }
 
 .header {
@@ -81,409 +103,641 @@
     margin-bottom: 4rem;
 }
 
+.terminalHeader {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+    font-family: 'Courier New', Courier, monospace;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.prompt { color: var(--color-gold); margin-right: 0.5rem; }
+.typing { color: #fff; border-right: 2px solid var(--color-gold); animation: blink 1s infinite; padding-right: 5px; }
+
+@keyframes blink { 50% { border-color: transparent } }
+
 .header h1 {
     font-size: 4rem;
-    font-weight: 800;
+    font-weight: 900;
     color: var(--color-white);
     margin: 0 0 1rem;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    background: linear-gradient(135deg, #ffffff 0%, var(--color-gold) 100%);
+    letter-spacing: 4px;
+    background: linear-gradient(to bottom, #fff, #888);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .header p {
-    font-size: 1.25rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin: 0;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 600px;
+    margin: 0 auto;
     letter-spacing: 1px;
 }
 
-/* Swipeable Cards Container */
+/* Cards Wrapper */
 .cardsWrapper {
     width: 100%;
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
     overflow: visible;
-    cursor: grab;
-    user-select: none;
     padding: 2rem 0;
-}
-
-.cardsWrapper:active {
-    cursor: grabbing;
+    position: relative;
+    display: flex;
+    align-items: center;
+    touch-action: pan-y;
 }
 
 .cardsContainer {
     display: flex;
     width: 300%;
     position: relative;
-    perspective: 1000px;
     transform-style: preserve-3d;
+    will-change: transform;
+}
+
+.navBtn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(10, 10, 10, 0.8);
+    border: 1px solid var(--color-gold-border);
+    color: var(--color-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.navBtn:hover:not(:disabled) {
+    background: var(--color-gold);
+    color: #000;
+    box-shadow: 0 0 20px var(--color-gold-glow);
+}
+
+.navBtn:disabled {
+    opacity: 0.1;
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.prevBtn { left: -25px; }
+.nextBtn { right: -25px; }
+
+@media (max-width: 1100px) {
+    .prevBtn { left: 10px; }
+    .nextBtn { right: 10px; }
 }
 
 .cardWrapper {
     width: 33.333%;
     padding: 0 1rem;
-    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    opacity: 0.5;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    opacity: 0.7;
     transform: scale(0.85);
+    filter: blur(2px);
     pointer-events: none;
-    will-change: transform, opacity;
 }
 
 .cardWrapper.active {
     opacity: 1;
     transform: scale(1);
-    pointer-events: auto;
+    filter: blur(0);
     z-index: 10;
+    pointer-events: auto;
 }
 
-.cardWrapper.left {
-    transform: scale(0.85) translateX(10%);
-}
-
-.cardWrapper.right {
-    transform: scale(0.85) translateX(-10%);
-}
-
-/* Team Card */
 .teamCard {
-    background-color: #0a0a0a;
-    border-radius: 24px;
+    width: 100%;
+    min-height: 580px;
+    border-radius: 16px;
     overflow: hidden;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow:
-        0 10px 40px rgba(0, 0, 0, 0.5),
-        0 0 20px rgba(245, 190, 30, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
+    transition: all 0.3s ease;
 }
 
-.teamCard::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 24px;
-    padding: 2px;
-    background: linear-gradient(135deg, transparent, rgba(245, 190, 30, 0.3), transparent);
-    -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.4s ease;
+.active .teamCard {
+    border-color: var(--team-color);
+    box-shadow: 0 0 40px rgba(var(--team-color-rgb), 0.2);
 }
 
-.cardWrapper.active .teamCard::before {
-    opacity: 1;
-}
-
-/* Card Visual Section */
 .cardVisual {
-    height: 300px;
+    width: 100%;
+    height: 220px;
     position: relative;
-    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+}
+
+.glitchOverlay {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255,255,255,0.05) 1px, rgba(255,255,255,0.05) 2px);
+    opacity: 0.5;
 }
 
 .circuitPattern {
     position: absolute;
-    width: 200px;
-    height: 200px;
-    border: 2px solid;
+    width: 300px;
+    height: 300px;
+    border: 1px solid;
     border-radius: 50%;
-    opacity: 0.2;
-    animation: rotate 20s linear infinite;
+    opacity: 0.1;
+    animation: rotate 30s linear infinite;
 }
 
-.circuitPattern::before,
-.circuitPattern::after {
-    content: '';
-    position: absolute;
-    border: 2px solid currentColor;
-    border-radius: 50%;
-}
-
-.circuitPattern::before {
-    width: 150px;
-    height: 150px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: rotate 15s linear infinite reverse;
-}
-
-.circuitPattern::after {
-    width: 100px;
-    height: 100px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: rotate 10s linear infinite;
-}
-
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.glowOrb {
-    position: absolute;
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    opacity: 0.15;
-    filter: blur(40px);
-    animation: pulse 3s ease-in-out infinite;
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        transform: scale(1);
-        opacity: 0.15;
-    }
-
-    50% {
-        transform: scale(1.2);
-        opacity: 0.25;
-    }
-}
+@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 .teamSymbol {
     position: relative;
     z-index: 2;
-    filter: drop-shadow(0 0 20px currentColor);
+    filter: drop-shadow(0 0 15px currentColor);
+    transform: scale(1.2);
 }
 
-/* Card Content */
 .cardContent {
-    padding: 2.5rem;
-    background: linear-gradient(to bottom, #0a0a0a, #000000);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.cardContent h2 {
-    font-size: 2.5rem;
-    font-weight: 800;
-    margin: 0 0 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.cardContent h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
-    margin: 0 0 1.5rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 0.875rem;
-}
-
-.description {
-    color: rgba(255, 255, 255, 0.8);
-    line-height: 1.6;
-    margin-bottom: 2rem;
-    font-size: 1.125rem;
-}
-
-.roleSection {
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 12px;
-    border-left: 3px solid var(--color-gold);
-}
-
-.roleSection h4 {
-    font-size: 0.875rem;
+.statusBadge {
+    font-size: 11px;
     font-weight: 700;
-    color: var(--color-gold);
+    letter-spacing: 0.15em;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 0 0 0.5rem;
-}
-
-.roleSection p {
-    color: rgba(255, 255, 255, 0.9);
-    margin: 0;
-    font-size: 1rem;
-}
-
-.tasksSection {
-    margin-bottom: 2rem;
-}
-
-.tasksSection h4 {
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: var(--color-gold);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 0 0 1rem;
-}
-
-.tasksSection ul {
-    list-style: none;
+    color: #f5a623;
+    margin-bottom: 6px;
+    border: none;
+    background: transparent;
     padding: 0;
+}
+
+.rolePill {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-left: 3px solid #f5a623;
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: #ffffff;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.cardContent h2 { 
+    font-size: 28px; 
+    font-weight: 800; 
+    letter-spacing: 0.05em; 
+    text-transform: uppercase;
     margin: 0;
-    display: grid;
-    gap: 0.75rem;
 }
 
-.tasksSection li {
-    color: rgba(255, 255, 255, 0.8);
-    padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 8px;
-    border-left: 2px solid rgba(245, 190, 30, 0.5);
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
+.cardContent h3 { 
+    font-size: 12px; 
+    font-weight: 500; 
+    letter-spacing: 0.15em; 
+    text-transform: uppercase; 
+    color: #888888; 
+    margin: -12px 0 0;
 }
 
-.tasksSection li:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-left-color: var(--color-gold);
-    transform: translateX(4px);
+.description { 
+    font-size: 14px; 
+    color: #cccccc; 
+    line-height: 1.5;
+    margin: 16px 0;
+    height: auto;
+    overflow: visible;
 }
+
+.statsLabel {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #f5a623;
+    margin-bottom: 8px;
+}
+
+.statsGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+    background: transparent;
+    padding: 0;
+    border: none;
+}
+
+.statItem {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 8px 14px;
+    color: #cccccc;
+    font-size: 13px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.statItem:hover {
+    border-color: var(--team-glow);
+    color: #ffffff;
+}
+
+.statLabel { display: none; }
+.statValue { font-size: 13px; font-weight: 500; }
 
 .exploreBtn {
-    display: block;
     width: 100%;
-    padding: 1rem;
+    padding: 12px;
     background: transparent;
-    border: 2px solid;
-    border-radius: 12px;
-    text-align: center;
+    border-radius: 8px;
+    font-size: 13px;
     font-weight: 700;
-    font-size: 1.125rem;
-    text-decoration: none;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.exploreBtn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: currentColor;
-    opacity: 0.1;
-    transition: left 0.4s ease;
-}
-
-.exploreBtn:hover::before {
-    left: 0;
+    cursor: pointer;
+    margin-top: auto;
+    border: 1px solid;
+    transition: background 200ms ease;
 }
 
 .exploreBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px currentColor;
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: inherit !important;
+    box-shadow: none;
 }
 
 /* Navigation Dots */
 .navigation {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 1rem;
-    margin-top: 3rem;
+    margin: 2rem 0;
 }
 
 .navDot {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     padding: 0;
 }
 
-.navDot:hover {
-    transform: scale(1.3);
-}
-
 .activeDot {
-    width: 40px;
-    border-radius: 6px;
+    width: 30px;
+    border-radius: 5px;
+    background: var(--color-gold) !important;
+    border-color: var(--color-gold) !important;
+    box-shadow: 0 0 10px var(--color-gold-glow);
 }
 
-/* Instructions */
-.instructions {
+/* Leaderboard */
+.leaderboardSection {
+    margin-top: 6rem;
+    padding-bottom: 4rem;
+}
+
+.leaderboardSection h2 {
     text-align: center;
-    margin-top: 3rem;
-    color: rgba(255, 255, 255, 0.4);
-    font-size: 0.875rem;
-    text-transform: uppercase;
+    font-size: 2rem;
+    letter-spacing: 4px;
+    margin-bottom: 3rem;
+    color: #fff;
+}
+
+.leaderboardContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.leaderboardTable {
+    padding: 1rem;
+}
+
+.leaderboardRow {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #2a2a2a;
+    background: transparent;
+    border-left-width: 3px;
+    border-left-style: solid;
+    transition: background 200ms ease;
+}
+
+.leaderboardRow:hover {
+    background: rgba(245, 166, 35, 0.05);
+}
+
+.rank { 
+    font-size: 13px; 
+    font-weight: 700; 
+    color: #888888; 
+    width: 40px; 
+}
+
+.userInfo { flex: 1; display: flex; flex-direction: column; }
+.userName { font-weight: 600; color: #fff; font-size: 15px; }
+.userTeam { font-size: 12px; letter-spacing: 0.05em; font-weight: 800; }
+
+.userStats span { font-size: 12px; color: #888888; font-weight: 700; letter-spacing: 0.05em; }
+.score { font-size: 16px !important; color: #f5a623 !important; font-weight: 700 !important; min-width: 80px; }
+
+.rank1 { color: #f5a623 !important; }
+.topRank { background: rgba(245, 166, 35, 0.05) !important; }
+
+.loader, .noData { padding: 3rem; text-align: center; color: rgba(255,255,255,0.4); letter-spacing: 2px; }
+
+.tableFooter {
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.2);
     letter-spacing: 2px;
 }
 
+.activeDot { width: 30px !important; border-radius: 4px !important; }
+
+/* ACTIVE COHORTS (FEAT-04) */
+.cohortsSection {
+    margin-top: 4rem;
+    padding-bottom: 2rem;
+}
+
+.sectionHeading {
+    text-align: center;
+    font-size: 2rem;
+    letter-spacing: 4px;
+    margin-bottom: 3rem;
+    color: #fff;
+}
+
+.cohortsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.cohortCard {
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    backdrop-filter: blur(10px);
+}
+
+.cohortCard:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(245, 166, 35, 0.1);
+}
+
+.cohortCard::before {
+    display: none;
+}
+
+.cohortHeader h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #fff;
+    font-weight: 800;
+}
+
+.cohortSub {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+.cohortStats {
+    display: flex;
+    justify-content: space-between;
+}
+
+.cohortStats .statValue {
+    display: flex;
+    flex-direction: column;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.cohortStats span {
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    letter-spacing: 1px;
+}
+
+.progressBarBg {
+    height: 3px;
+    background: #2a2a2a;
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 8px 0;
+}
+
+.progressBarFill {
+    height: 100%;
+    border-radius: 2px;
+    transform-origin: left;
+    animation: fillProgress 1.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.cohortBtn {
+    background: transparent;
+    border: 1px solid #f5a623;
+    color: #f5a623;
+    font-weight: 700;
+    border-radius: 6px;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    transition: all 200ms ease;
+    cursor: pointer;
+    text-align: center;
+}
+
+.cohortBtn:hover {
+    background: rgba(245, 166, 35, 0.1);
+}
+
+/* OPERATION BOARD (FEAT-05) */
+.operationBoardSection {
+    margin-top: 4rem;
+    padding-bottom: 2rem;
+}
+
+.ctfGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.ctfCard {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-left: 3px solid #f5a623;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: border-color 200ms ease;
+}
+
+.ctfCard:hover {
+    border-color: rgba(245, 166, 35, 0.5);
+}
+
+.ctfHeader h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #f5a623;
+    font-weight: 700;
+}
+
+.ctfDifficulty {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border: 1px solid currentColor;
+    background: transparent;
+}
+
+@keyframes pulseGlow {
+    0% { filter: brightness(1) drop-shadow(0 0 2px currentColor); }
+    50% { filter: brightness(1.3) drop-shadow(0 0 8px currentColor); }
+    100% { filter: brightness(1) drop-shadow(0 0 2px currentColor); }
+}
+
+.ctfDetails {
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.ctfMeta {
+    display: flex;
+    gap: 2rem;
+    font-size: 13px;
+    color: #888888;
+    margin-top: 0.5rem;
+}
+
+.btnPrimary {
+    background: #f5a623;
+    color: #0a0a0a;
+    font-weight: 700;
+    border-radius: 6px;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    transition: 200ms ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btnSecondary {
+    background: transparent;
+    color: #f5a623;
+    border: 1px solid #f5a623;
+    font-weight: 700;
+    border-radius: 6px;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    transition: all 200ms ease;
+    cursor: pointer;
+}
+
+.btnSecondary:hover {
+    background: rgba(245,166,35,0.1);
+}
+
 @media (max-width: 768px) {
-    .header h1 {
-        font-size: 2.5rem;
+    .page { padding-top: 6rem; }
+    .header h1 { font-size: 2.5rem; }
+    .header p { font-size: 0.9rem; padding: 0 1rem; }
+    
+    .cardsWrapper {
+        max-width: 100vw;
+        padding: 1rem 0;
+        margin: 0;
+        overflow: hidden;
+        justify-content: center;
     }
 
-    .cardVisual {
-        height: 200px;
+    .cardWrapper { 
+        padding: 0 10px;
     }
 
-    .cardContent {
-        padding: 1.5rem;
+    .teamCard {
+        transform: scale(0.9);
+        width: 100%;
+        max-width: 340px;
+        margin: 0 auto;
     }
-
-    .cardContent h2 {
-        font-size: 2rem;
+    
+    .cardVisual { height: 160px; }
+    .cardContent h2 { font-size: 1.4rem; }
+    .cardContent { padding: 1.5rem; }
+    
+    .userStats span:first-child { display: none; }
+    .cohortsGrid { grid-template-columns: 1fr; }
+    
+    .navBtn {
+        width: 36px;
+        height: 36px;
+        top: 40%;
     }
-
-    .circuitPattern {
-        width: 150px;
-        height: 150px;
-    }
-
-    .glowOrb {
-        width: 80px;
-        height: 80px;
-    }
-
-
 }
 
 @media (max-width: 480px) {
-    .header h1 {
-        font-size: 2rem;
+    .page { padding-top: 5rem; }
+    .cardsContainer {
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     }
-
-    .cardsWrapper {
-        padding: 1rem 0;
+    
+    .navBtn {
+        display: none; /* Rely on swiping for mobile */
     }
-
+    
     .cardWrapper {
-        padding: 0 0.5rem;
+        padding: 0 5px;
     }
-
-    .cardContent h2 {
-        font-size: 1.75rem;
-    }
-
-
-}
+}

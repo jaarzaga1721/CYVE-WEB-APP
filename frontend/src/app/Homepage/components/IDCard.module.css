@@ -1,0 +1,264 @@
+.cardScene {
+    perspective: 1200px;
+    width: 340px;
+    height: 210px;
+    flex-shrink: 0;
+}
+
+.card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(10, 10, 10, 0.98) 100%);
+    border: 1px solid var(--role-color, #888);
+    border-radius: 12px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: default;
+    transition: transform 0.15s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 20px var(--role-glow, rgba(136,136,136,0.2)), 0 8px 32px rgba(0,0,0,0.6);
+    overflow: hidden;
+    will-change: transform;
+}
+
+.card.hovered {
+    box-shadow: 0 0 40px var(--role-glow, rgba(136,136,136,0.3)), 0 20px 60px rgba(0,0,0,0.8);
+}
+
+/* Holographic sheen */
+.sheen {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.04) 50%, transparent 60%);
+    background-size: 200% 200%;
+    animation: sheenMove 4s ease-in-out infinite;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+@keyframes sheenMove {
+    0% { background-position: 200% 200%; }
+    50% { background-position: 0% 0%; }
+    100% { background-position: 200% 200%; }
+}
+
+/* Scanline overlay */
+.scanline {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+/* Corner accents */
+.cornerTL,
+.cornerBR {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 2px solid;
+}
+
+.cornerTL {
+    top: 10px;
+    left: 10px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.cornerBR {
+    bottom: 10px;
+    right: 10px;
+    border-left: none;
+    border-top: none;
+}
+
+/* Top row */
+.cardTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 1;
+}
+
+.brandMark {
+    display: flex;
+    flex-direction: column;
+}
+
+.brandLogo {
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--color-gold, #f5a623);
+    letter-spacing: 4px;
+    text-shadow: 0 0 10px rgba(245,166,35,0.5);
+}
+
+.brandSub {
+    font-size: 0.45rem;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+}
+
+.classificationBadge {
+    font-size: 0.6rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    border: 1px solid;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* Avatar */
+.avatarSection {
+    position: absolute;
+    right: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    z-index: 1;
+}
+
+.avatarRing {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 2px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.avatarInner {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatarInitial {
+    font-size: 1.4rem;
+    font-weight: 900;
+}
+
+.statusDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #00ff88;
+    box-shadow: 0 0 6px #00ff88;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.8); }
+}
+
+/* Identity */
+.identity {
+    z-index: 1;
+    max-width: 200px;
+}
+
+.operativeName {
+    font-size: 0.85rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 2px;
+    margin: 0 0 3px;
+    text-shadow: 0 0 8px rgba(255,255,255,0.3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.roleLabel {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.roleSubLabel {
+    font-size: 0.5rem;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.4);
+}
+
+/* Stats */
+.statsRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1;
+}
+
+.statItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+}
+
+.statVal {
+    font-size: 0.65rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 1px;
+}
+
+.statKey {
+    font-size: 0.38rem;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 1px;
+}
+
+.statDivider {
+    width: 1px;
+    height: 20px;
+    border-left: 1px solid;
+    opacity: 0.4;
+}
+
+/* Bottom */
+.cardBottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    z-index: 1;
+}
+
+.idCode {
+    font-family: 'Courier New', monospace;
+    font-size: 0.5rem;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 2px;
+}
+
+.barcode {
+    display: flex;
+    align-items: flex-end;
+    gap: 1px;
+}
+
+.bar {
+    width: 2px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 1px;
+}

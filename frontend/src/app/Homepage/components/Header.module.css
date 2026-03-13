@@ -1,213 +1,311 @@
 .header {
-    position: sticky;
-    top: 0;
+    position: fixed;
+    top: 1.5rem;
+    left: 0;
+    right: 0;
     z-index: 1000;
-    background-color: var(--color-black);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    padding: 0 1rem;
+    pointer-events: none;
 }
 
-.container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 1.5rem 4rem;
+.commandBar {
+    background: #000000;
+    border: 1px solid rgba(245, 190, 30, 0.2);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.8),
+        0 0 15px rgba(245, 190, 30, 0.05);
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
+    gap: 1rem;
+    max-width: fit-content;
+    pointer-events: auto;
+    animation: barEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.logo {
+@keyframes barEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logoIcon {
+    width: 44px;
+    height: 44px;
+    background: rgba(245, 190, 30, 0.1);
+    border: 1px solid rgba(245, 190, 30, 0.2);
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    transition: all var(--transition-base);
+    justify-content: center;
+    transition: all 0.3s ease;
 }
 
-.logo:hover {
-    transform: scale(1.05);
+.logoIcon:hover {
+    background: rgba(245, 190, 30, 0.2);
+    border-color: var(--color-gold);
+    box-shadow: 0 0 15px rgba(245, 190, 30, 0.3);
 }
 
 .logoImg {
-    height: 80px;
-    width: auto;
-    transition: all var(--transition-base);
+    width: 24px;
+    height: auto;
 }
 
 .nav {
     display: flex;
-    gap: 2rem;
+    gap: 0.5rem;
     align-items: center;
-    flex: 1;
-    justify-content: center;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+    padding: 0 0.5rem;
 }
 
 .navLink {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--color-white);
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: all var(--transition-base);
+    position: relative;
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.navText {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+}
+
+.navLink:hover .navText {
+    color: var(--color-gold);
+    text-shadow: 0 0 12px rgba(245, 190, 30, 0.3);
 }
 
 .navLink.active {
-    background-color: var(--color-gold);
-    color: var(--color-black);
+    background: rgba(245, 190, 30, 0.05);
 }
 
-.navLink:hover {
-    opacity: 0.8;
+.navLink.active .navText {
+    color: var(--color-gold);
+    text-shadow: 0 0 15px rgba(245, 190, 30, 0.4);
+}
+
+.navLink:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 4px;
+}
+
+.indicator {
+    position: absolute;
+    bottom: 2px;
+    width: 0;
+    height: 3px;
+    background: var(--color-gold);
+    border-radius: 4px;
+    box-shadow: 0 0 15px var(--color-gold);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navLink.active .indicator {
+    width: 24px;
+}
+
+/* Red notification dot for pending link requests */
+.notifDot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: #e53935;
+    border-radius: 50%;
+    border: 1px solid #000;
+    pointer-events: none;
 }
 
 .actions {
+    padding-left: 0.5rem;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     align-items: center;
-    gap: 1rem;
 }
 
-.authButtons {
+.profileMonitor {
     display: flex;
-    gap: 1rem;
     align-items: center;
+    gap: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 30px;
 }
 
-.profileLink {
-    font-size: 1rem;
-    color: var(--color-white);
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-md);
-    transition: all var(--transition-base);
+.avatar {
+    position: relative;
+    width: 32px;
+    height: 32px;
 }
 
-.profileLink:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--color-gold);
+.avatarInner {
+    width: 100%;
+    height: 100%;
+    background: var(--color-gold);
+    color: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 0.9rem;
 }
 
-.btnLogin,
-.btnSignup,
-.btnLogout {
-    padding: 0.6rem 1.5rem;
-    border-radius: 25px;
-    font-weight: 600;
-    font-size: 1rem;
+.statusDot {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 8px;
+    height: 8px;
+    background: #00ff00;
+    border: 2px solid #000;
+    border-radius: 50%;
+    box-shadow: 0 0 5px #00ff00;
+}
+
+.monitorInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.monitorName {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+.btnQuickLogout {
+    background: none;
+    border: none;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-align: left;
+    transition: color 0.2s ease;
+}
+
+.btnQuickLogout:hover {
+    color: #ff4444;
+}
+
+.authGroup {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btnAccess,
+.btnJoin {
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 1.5px;
     transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
-    border: 2px solid var(--color-gold);
 }
 
-.btnLogin {
-    background-color: transparent;
-    color: var(--color-gold);
-}
-
-.btnLogin:hover {
-    background-color: var(--color-gold);
-    color: var(--color-black);
-    opacity: 1;
-}
-
-.btnSignup {
-    background-color: var(--color-gold);
-    color: var(--color-black);
-}
-
-.btnSignup:hover {
-    background-color: transparent;
-    color: var(--color-gold);
-    opacity: 1;
-}
-
-.btnLogout {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--color-white);
+.btnAccess {
+    background: transparent;
+    color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.btnLogout:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-color: var(--color-gold);
-    color: var(--color-gold);
+.btnAccess:hover {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.1);
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
-    .container {
-        padding: 1.5rem 2rem;
-    }
-
-    .nav {
-        gap: 1.5rem;
-    }
-
-    .navLink {
-        font-size: 1rem;
-    }
+.btnJoin {
+    background: var(--color-gold);
+    color: #000;
+    box-shadow: 0 0 15px rgba(245, 190, 30, 0.2);
 }
 
-@media (max-width: 1024px) {
-    .container {
-        padding: 1rem 2rem;
-    }
-
-    .nav {
-        gap: 1.5rem;
-    }
-
-    .navLink {
-        font-size: 1rem;
-    }
-
-    .logoImg {
-        height: 60px;
-    }
+.btnJoin:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(245, 190, 30, 0.4);
 }
 
+/* Mobile Responsive */
 @media (max-width: 768px) {
-    .container {
-        flex-wrap: wrap;
-        padding: 1rem;
-        gap: 1rem;
-    }
-
-    .logoImg {
-        height: 60px;
+    .header {
+        top: 1rem;
+        padding: 0 0.5rem;
     }
 
     .nav {
-        order: 3;
-        width: 100%;
-        justify-content: center;
-        gap: 1rem;
-        background-color: rgba(0, 0, 0, 0.95);
-        padding: 1rem;
-        border-radius: 8px;
-        margin-top: 1rem;
+        gap: 0.5rem;
+        padding: 0 0.5rem;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;  /* IE and Edge */
+        mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    }
+
+    .nav::-webkit-scrollbar {
+        display: none; /* Hide scrollbar for Chrome/Safari/Webkit */
     }
 
     .navLink {
-        font-size: 0.875rem;
+        padding: 0.5rem 0.8rem;
+        flex-shrink: 0;
     }
 
-    .actions {
-        flex-direction: column;
-        gap: 0.5rem;
+    .navText {
+        font-size: 0.65rem;
+        letter-spacing: 0.5px;
     }
 
-    .authButtons {
-        flex-direction: column;
-        gap: 0.5rem;
+    .navLink.active::after {
+        content: '';
+        width: 4px;
+        height: 4px;
+        background: var(--color-gold);
+        border-radius: 50%;
+        box-shadow: 0 0 10px var(--color-gold);
+        margin-top: 4px;
+        position: absolute;
+        bottom: 2px;
     }
 
-    .btnLogin,
-    .btnSignup,
-    .btnLogout {
-        font-size: 0.9rem;
-        padding: 0.5rem 1rem;
+    .monitorInfo {
+        display: none;
+    }
+
+    .commandBar {
+        gap: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .btnAccess,
+    .btnJoin {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.6rem;
+        letter-spacing: 1px;
     }
 }

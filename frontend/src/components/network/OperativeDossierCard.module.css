@@ -1,0 +1,363 @@
+.card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+    width: 100%;
+}
+
+.card:hover {
+    border-color: rgba(245, 166, 35, 0.35);
+    box-shadow: 0 0 20px rgba(245, 166, 35, 0.05);
+}
+
+/* Suggestion reason */
+.suggestionReason {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #888;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+/* Header */
+.cardHeader {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #2a2a2a;
+    border: 2px solid #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.identity {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.displayName {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.teamPill {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    background: rgba(255, 255, 255, 0.03);
+    letter-spacing: 0.04em;
+}
+
+.rankBadge {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(245, 166, 35, 0.12);
+    border: 1px solid rgba(245, 166, 35, 0.3);
+    color: #f5a623;
+    letter-spacing: 0.04em;
+}
+
+/* Divider */
+.divider {
+    height: 1px;
+    background: #2a2a2a;
+    margin: 0;
+}
+
+/* Skills */
+.skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.skillPill {
+    font-size: 0.6875rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    color: #888;
+}
+
+/* Progress */
+.progressRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.progressLabel {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #888;
+    white-space: nowrap;
+}
+
+.progressBar {
+    flex: 1;
+    height: 4px;
+    background: #2a2a2a;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: #f5a623;
+    border-radius: 2px;
+    transition: width 0.6s ease;
+}
+
+.progressPct {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: #f5a623;
+    white-space: nowrap;
+}
+
+/* Shared allies */
+.sharedAllies {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.625rem;
+    font-weight: 800;
+    color: #f5a623;
+    letter-spacing: 0.08em;
+    background: rgba(245, 166, 35, 0.08);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin: 4px 0;
+}
+
+.sharedIcon {
+    font-size: 0.75rem;
+}
+
+/* Classified */
+.classifiedBanner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(229, 57, 53, 0.08);
+    border: 1px solid rgba(229, 57, 53, 0.25);
+    border-radius: 8px;
+    padding: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+.classifiedBanner span {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.classifiedBanner strong {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: rgba(229, 57, 53, 0.8);
+    margin-bottom: 2px;
+}
+
+.classifiedBanner p {
+    margin: 0;
+}
+
+/* Action area */
+.actions {
+    margin-top: 4px;
+}
+
+.actionsRow {
+    display: flex;
+    gap: 8px;
+}
+
+/* ESTABLISH LINK */
+.btnEstablish {
+    width: 100%;
+    padding: 10px 16px;
+    background: #f5a623;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btnEstablish:hover {
+    background: #ffbf30;
+    box-shadow: 0 0 16px rgba(245, 166, 35, 0.35);
+    transform: translateY(-1px);
+}
+
+/* LINK PENDING */
+.btnPending {
+    width: 100%;
+    padding: 10px 16px;
+    background: transparent;
+    color: #888;
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    cursor: not-allowed;
+}
+
+/* ACCEPT */
+.btnAccept {
+    flex: 1;
+    padding: 10px;
+    background: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.4);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btnAccept:hover {
+    background: rgba(76, 175, 80, 0.25);
+}
+
+/* DECLINE */
+.btnDecline {
+    flex: 1;
+    padding: 10px;
+    background: transparent;
+    color: #e53935;
+    border: 1px solid rgba(229, 57, 53, 0.4);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btnDecline:hover {
+    background: rgba(229, 57, 53, 0.1);
+}
+
+/* LINK ACTIVE */
+.btnActiveWrapper {
+    position: relative;
+}
+
+.btnActive {
+    width: 100%;
+    padding: 10px 16px;
+    background: rgba(76, 175, 80, 0.12);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.5);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    cursor: default;
+    transition: all 0.2s;
+}
+
+.btnTerminate {
+    display: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    background: rgba(229, 57, 53, 0.15);
+    color: #e53935;
+    border: 1px solid rgba(229, 57, 53, 0.4);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btnActiveWrapper:hover .btnActive {
+    display: none;
+}
+
+.btnActiveWrapper:hover .btnTerminate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* CANCEL */
+.btnCancel {
+    padding: 10px 14px;
+    background: transparent;
+    color: #888;
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btnCancel:hover {
+    color: #fff;
+    border-color: #888;
+}
+
+/* CLASSIFIED */
+.btnClassified {
+    width: 100%;
+    padding: 10px 16px;
+    background: transparent;
+    color: #555;
+    border: 1px solid #333;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    cursor: not-allowed;
+}

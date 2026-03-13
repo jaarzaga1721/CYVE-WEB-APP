@@ -18,6 +18,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     full_name VARCHAR(100),
     role ENUM('admin', 'user') DEFAULT 'user',
+    profile_data JSON DEFAULT NULL,
     reset_token VARCHAR(255) DEFAULT NULL,
     reset_expiry DATETIME DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

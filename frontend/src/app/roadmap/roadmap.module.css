@@ -3,7 +3,7 @@
 .page {
     min-height: calc(100vh - 200px);
     padding: 0;
-    background-color: #000000;
+    background-color: var(--color-black);
 }
 
 /* Header: black with gold hex pattern, centered ROADMAP title */
@@ -12,23 +12,21 @@
     background-color: var(--color-black);
     padding: 6rem 2rem 5rem;
     overflow: hidden;
-    background: radial-gradient(circle at 50% 0%, rgba(245, 190, 30, 0.15) 0%, transparent 70%);
+    background: radial-gradient(circle at 50% 0%, var(--color-gold-dim) 0%, transparent 70%);
 }
 
 .hexPattern {
     position: absolute;
-    top: -10%;
-    left: -10%;
-    right: -10%;
-    height: 120%;
-    opacity: 0.05;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    opacity: 0.03;
     background-image:
-        linear-gradient(rgba(245, 190, 30, 0.5) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(245, 190, 30, 0.5) 1px, transparent 1px);
-    background-size: 50px 50px;
+        linear-gradient(var(--color-gold) 1px, transparent 1px),
+        linear-gradient(90deg, var(--color-gold) 1px, transparent 1px);
+    background-size: 40px 40px;
     pointer-events: none;
-    transform: translate(calc(var(--mouse-x) * -1.5), calc(var(--mouse-y) * -1.5));
-    transition: transform 0.2s ease-out;
 }
 
 .hexFadeLeft,
@@ -44,14 +42,11 @@
     text-align: center;
     margin: 0;
     letter-spacing: -2px;
-    background: linear-gradient(to bottom, #ffffff 30%, #f5be1e 100%);
+    background: linear-gradient(to bottom, var(--color-white) 30%, var(--color-gold) 100%);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: fadeIn 1s ease-out;
-    transform: translate(calc(var(--mouse-x) * 0.5), calc(var(--mouse-y) * 0.5));
-    transition: transform 0.1s ease-out;
-    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .roleSubtitle {
@@ -113,27 +108,46 @@
 }
 
 .roleBtn {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius-2xl);
+    background: #0a0a0a;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
     padding: 3rem 2rem;
     color: var(--color-white);
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     gap: 1.5rem;
-    transform: translate(calc(var(--mouse-x) * 0.2), calc(var(--mouse-y) * 0.2));
+    position: relative;
+    overflow: hidden;
+}
+
+.roleBtn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: radial-gradient(circle at 50% 0%, rgba(245, 190, 30, 0.03), transparent 70%);
+    pointer-events: none;
 }
 
 .roleBtn:hover {
-    background: rgba(245, 190, 30, 0.08);
+    background: #111;
     border-color: var(--color-gold);
-    transform: translateY(-15px) scale(1.05);
-    box-shadow: 0 25px 50px rgba(245, 190, 30, 0.2);
+    transform: translateY(-8px);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(245, 190, 30, 0.1);
+}
+
+.roleBtnActive {
+    border-color: var(--color-gold);
+    background: #111;
+    box-shadow: 0 0 25px rgba(245, 190, 30, 0.15);
 }
 
 .roleBtnIcon {
@@ -177,20 +191,13 @@
     border-radius: 10px;
     overflow: hidden;
     position: relative;
-    transition: all 0.3s ease;
-}
-
-.progressWrap:hover .progressBar {
-    height: 10px;
-    background-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 20px rgba(245, 190, 30, 0.2);
 }
 
 .progressFill {
     height: 100%;
-    background: linear-gradient(90deg, #f5be1e, #ffdb70);
+    background: linear-gradient(90deg, var(--color-gold), #ffdb70);
     border-radius: 10px;
-    box-shadow: 0 0 15px rgba(245, 190, 30, 0.4);
+    box-shadow: 0 0 15px var(--color-gold-glow);
     transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -198,12 +205,6 @@
     font-size: 1.25rem;
     font-weight: 800;
     color: var(--color-gold);
-    transition: all 0.3s ease;
-}
-
-.progressWrap:hover .progressPercent {
-    transform: scale(1.2);
-    text-shadow: 0 0 10px rgba(245, 190, 30, 0.8);
 }
 
 /* Overview section */
@@ -225,12 +226,12 @@
 .overviewText {
     font-size: 1.125rem;
     line-height: 1.8;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-text-dim);
     text-align: center;
     padding: 3rem;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--color-glass);
     border-radius: var(--radius-2xl);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-border);
 }
 
 /* Skills & Certifications */
@@ -248,18 +249,17 @@
 }
 
 .skillsCertCard {
-    background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: var(--radius-2xl);
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
     padding: 3rem;
     transition: all 0.4s ease;
 }
 
 .skillsCertCard:hover {
-    border-color: rgba(245, 190, 30, 0.3);
+    border-color: var(--color-gold);
     transform: translateY(-5px);
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--color-gold-dim);
 }
 
 .skillsCertHeading {
@@ -317,24 +317,8 @@
     left: 10%;
     right: 10%;
     height: 2px;
-    background: linear-gradient(90deg, transparent, #f5be1e, transparent);
-    background-size: 200% 100%;
-    box-shadow: 0 0 10px rgba(245, 190, 30, 0.5);
+    background-color: var(--color-gold);
     z-index: 0;
-    animation: pulseGlow 3s infinite alternate;
-}
-
-@keyframes pulseGlow {
-    0% {
-        opacity: 0.4;
-        filter: brightness(1);
-    }
-
-    100% {
-        opacity: 0.8;
-        filter: brightness(1.5);
-        box-shadow: 0 0 20px rgba(245, 190, 30, 0.8);
-    }
 }
 
 .step {
@@ -370,8 +354,8 @@
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    background-color: #000000;
-    border: 2px solid #f5be1e;
+    background-color: var(--color-black);
+    border: 2px solid var(--color-gold);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -380,14 +364,6 @@
     flex-shrink: 0;
     position: relative;
     z-index: 2;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 0 0 rgba(245, 190, 30, 0);
-}
-
-.step:hover .stepIcon {
-    transform: scale(1.15) rotate(5deg);
-    border-color: #ffffff;
-    box-shadow: 0 0 20px rgba(245, 190, 30, 0.6);
 }
 
 .stepIcon::after {
@@ -397,7 +373,7 @@
     bottom: -1.25rem;
     width: 2px;
     height: 1.25rem;
-    background-color: #f5be1e;
+    background-color: var(--color-gold);
     transform: translateX(-50%);
     z-index: -1;
 }
@@ -412,34 +388,15 @@
 .contentBlock {
     width: 100%;
     min-height: 80px;
-    background: linear-gradient(135deg, #f5be1e 0%, #ffdb70 100%);
+    background: linear-gradient(135deg, var(--color-gold) 0%, #ffdb70 100%);
     border: none;
     border-radius: var(--radius-xl);
     padding: 1.5rem;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
-    color: #000000;
-    box-shadow: 0 4px 15px rgba(245, 190, 30, 0.15);
-    cursor: pointer;
-}
-
-.contentBlock::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(120deg,
-            transparent,
-            rgba(255, 255, 255, 0.4),
-            transparent);
-    transition: all 0.6s ease;
-}
-
-.contentBlock:hover::before {
-    left: 100%;
+    color: var(--color-black);
+    box-shadow: 0 4px 15px var(--color-gold-dim);
 }
 
 .contentBlock:hover {
@@ -447,16 +404,27 @@
     box-shadow: 0 10px 25px rgba(245, 190, 30, 0.3);
 }
 
-.contentBlockDone {
-    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-    color: white;
+@keyframes markDoneAnimation {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 166, 35, 0); }
+    50% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(245, 166, 35, 0.2); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 166, 35, 0); }
 }
 
-.contentBlockDone .contentBlockTitle,
+.contentBlockDone {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+    animation: markDoneAnimation 0.5s ease-out;
+}
+
+.contentBlockDone .contentBlockTitle {
+    color: rgba(255, 255, 255, 0.7);
+}
+
 .contentBlockDone .contentBlockDesc,
 .contentBlockDone .contentBlockMeta,
 .contentBlockDone .resourceLink {
-    color: white;
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .contentBlockDone::after {
@@ -464,15 +432,43 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: rgba(255, 255, 255, 0.2);
-    width: 24px;
-    height: 24px;
+    background: rgba(245, 166, 35, 0.2);
+    color: #f5a623;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: bold;
+}
+
+.contentBlockActive {
+    background: linear-gradient(135deg, #f5be1e 0%, #ffdb70 100%);
+    animation: pulseBorder 2s infinite;
+}
+
+@keyframes pulseBorder {
+    0% { box-shadow: 0 0 0 0 rgba(245, 190, 30, 0.6); }
+    70% { box-shadow: 0 0 0 10px rgba(245, 190, 30, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(245, 190, 30, 0); }
+}
+
+.contentBlockLocked {
+    background: #2a2a2a;
+    color: rgba(255, 255, 255, 0.5);
+    box-shadow: none;
+}
+
+.contentBlockLocked .contentBlockTitle {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.contentBlockLocked .contentBlockDesc,
+.contentBlockLocked .contentBlockMeta,
+.contentBlockLocked .contentBlockResources {
+    color: rgba(255, 255, 255, 0.4);
 }
 
 .contentBlockInner {
@@ -519,13 +515,25 @@
 }
 
 .resourceLink {
-    color: #000000;
-    text-decoration: underline;
+    color: #1a1a1a;
+    text-decoration: underline dashed;
     font-weight: 500;
+    transition: all 0.2s ease;
+    padding: 0 2px;
 }
 
 .resourceLink:hover {
-    opacity: 0.8;
+    font-weight: 700;
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.contentBlockDone .resourceLink {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.contentBlockDone .resourceLink:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .btnComplete {
@@ -586,8 +594,24 @@
     border-radius: 12px;
     overflow: hidden;
     min-height: 400px;
-    background: linear-gradient(135deg, #e8eef4 0%, #d4dce4 100%);
+    background: #000;
+    border: 1px solid #f5a623;
+    box-shadow: 0 0 20px rgba(245, 166, 35, 0.1);
     z-index: 0;
+}
+
+.mapWrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+    background-size: 100% 2px;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0.3;
 }
 
 .mapContainer {
@@ -595,6 +619,11 @@
     height: 400px;
     min-height: 400px;
     border-radius: 12px;
+    background: #000;
+}
+
+.mapContainer :global(.leaflet-tile-pane) {
+    filter: grayscale(1) brightness(0.6) contrast(1.4) sepia(1) hue-rotate(-15deg) saturate(3);
 }
 
 .mapContainer :global(.leaflet-container) {
@@ -602,15 +631,15 @@
     height: 100%;
     border-radius: 12px;
     font-family: var(--font-family-primary);
+    background: #000;
 }
 
 .mapPlaceholder {
     width: 100%;
     min-height: 400px;
-    background:
-        radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.25) 0%, transparent 50%),
-        linear-gradient(135deg, #e8eef4 0%, #c5d4e0 50%, #b8c8d4 100%);
+    background: radial-gradient(circle at 50% 50%, rgba(245, 166, 35, 0.05) 0%, #050505 100%);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
@@ -702,23 +731,24 @@
 }
 
 .companyCard {
-    background: linear-gradient(135deg, #f5be1e 0%, #ffdb70 100%);
+    background: var(--color-card);
+    border: none;
+    border-left: 4px solid var(--color-gold);
     border-radius: var(--radius-2xl);
     padding: 2.5rem;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-card);
 }
 
 .companyCard:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(245, 190, 30, 0.3);
+    box-shadow: 0 20px 40px var(--color-gold-dim);
 }
 
 .companyName {
     font-size: 1.75rem;
     font-weight: 800;
-    color: #000000;
+    color: #ffffff;
     margin: 0 0 0.5rem;
     letter-spacing: -0.5px;
 }
@@ -727,7 +757,7 @@
 .companyDescription {
     font-size: 1rem;
     line-height: 1.6;
-    color: rgba(0, 0, 0, 0.8);
+    color: rgba(255, 255, 255, 0.8);
     margin: 0;
 }
 
@@ -738,10 +768,10 @@
 .companyRoles {
     font-size: 0.875rem;
     font-weight: 700;
-    color: #000000;
+    color: #ffffff;
     margin: 1.5rem 0.75rem 0 0;
     padding: 0.75rem 1rem;
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: var(--radius-md);
     display: inline-block;
 }
@@ -755,15 +785,17 @@
     margin-top: 1.5rem;
     font-size: 0.9375rem;
     font-weight: 600;
-    color: #000000;
-    background-color: rgba(0, 0, 0, 0.12);
+    color: var(--color-gold);
+    background-color: transparent;
+    border: 1px solid var(--color-gold);
     padding: 0.75rem 1.25rem;
     border-radius: 8px;
     transition: all 0.3s ease;
 }
 
 .companyLink:hover {
-    background-color: rgba(0, 0, 0, 0.25);
+    background-color: var(--color-gold);
+    color: var(--color-black);
 }
 
 /* Responsive */
@@ -784,6 +816,11 @@
 }
 
 @media (max-width: 768px) {
+    .roleSelector {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
     .skillsCertGrid {
         grid-template-columns: 1fr;
     }

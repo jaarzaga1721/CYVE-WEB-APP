@@ -1,11 +1,16 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { API_BASE_URL } from '../config';
+
+import { useApi } from '../hooks/useApi';
 
 interface User {
     id: string | number;
+    username: string;
     email: string;
     name: string;
+    display_name?: string | null;
     role: string;
 }
 
@@ -16,104 +21,91 @@ interface AuthContextType {
     signup: (name: string, email: string, password: string) => Promise<{ success: boolean; message: string }>;
     logout: () => void;
     loading: boolean;
+    setUser: (user: User | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost/ARZAGA/CYVE-WEB-APP-main/backend/api';
-const CURRENT_USER_KEY = 'cyve_current_user';
-
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { callApi, loading: apiLoading } = useApi();
+    const [initializing, setInitializing] = useState(true);
 
     useEffect(() => {
-        // Check if user is already logged in (persistence)
-        const storedUser = localStorage.getItem(CURRENT_USER_KEY);
-        if (storedUser) {
-            try {
-                setUser(JSON.parse(storedUser));
-            } catch (error) {
-                console.error('Error parsing stored user:', error);
-                localStorage.removeItem(CURRENT_USER_KEY);
+        const checkSession = async () => {
+            // Check local storage first for immediate UI
+            const savedUser = localStorage.getItem('cyve_user');
+            if (savedUser) {
+                try {
+                    setUser(JSON.parse(savedUser));
+                } catch (e) {
+                    localStorage.removeItem('cyve_user');
+                }
             }
-        }
-        setLoading(false);
-    }, []);
+
+            const result = await callApi('check_session.php');
+            if (result.success && result.data?.user) {
+                setUser(result.data.user);
+                localStorage.setItem('cyve_user', JSON.stringify(result.data.user));
+            } else {
+                setUser(null);
+                localStorage.removeItem('cyve_user');
+            }
+            setInitializing(false);
+        };
+        checkSession();
+    }, [callApi]);
 
     const login = async (email: string, password: string, remember: boolean = false): Promise<{ success: boolean; message: string }> => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/login.php`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
+        const result = await callApi('login.php', {
+            method: 'POST',
+            body: JSON.stringify({ email, password, remember })
+        });
 
-            const data = await response.json();
-
-            if (data.success) {
-                const userObj: User = {
-                    id: data.user.id,
-                    email: data.user.email,
-                    name: data.user.name,
-                    role: data.user.role || 'user'
-                };
-
-                setUser(userObj);
-                localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userObj));
-                return { success: true, message: data.message || 'Login successful!' };
-            } else {
-                return { success: false, message: data.message || 'Invalid credentials.' };
+        if (result.success && result.data?.user) {
+            setUser(result.data.user);
+            localStorage.setItem('cyve_user', JSON.stringify(result.data.user));
+            if (result.data.token) {
+                localStorage.setItem('cyve_token', result.data.token);
             }
-        } catch (error) {
-            console.error('Login error:', error);
-            return { success: false, message: 'Could not connect to the authentication server. Ensure XAMPP is running.' };
         }
+        return { success: result.success, message: result.message };
     };
 
     const signup = async (name: string, email: string, password: string): Promise<{ success: boolean; message: string }> => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/signup.php`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, email, password }),
-            });
+        const result = await callApi('signup.php', {
+            method: 'POST',
+            body: JSON.stringify({ name, email, password })
+        });
 
-            const data = await response.json();
-
-            if (data.success) {
-                // After successful signup, we can automatically log them in
-                // using the user data returned or the credentials
-                return login(email, password);
-            } else {
-                return { success: false, message: data.message || 'Registration failed.' };
+        if (result.success && result.data?.user) {
+            setUser(result.data.user);
+            localStorage.setItem('cyve_user', JSON.stringify(result.data.user));
+            if (result.data.token) {
+                localStorage.setItem('cyve_token', result.data.token);
             }
-        } catch (error) {
-            console.error('Signup error:', error);
-            return { success: false, message: 'Could not connect to the registration server. Ensure XAMPP is running.' };
         }
+        return { success: result.success, message: result.message };
     };
 
     const logout = async () => {
-        try {
-            // Optional: call logout API to clear PHP session
-            await fetch(`${API_BASE_URL}/logout.php`);
-        } catch (e) {
-            console.warn('Logout API call failed, continuing with local cleanup');
-        }
-
+        await callApi('logout.php');
         setUser(null);
-        localStorage.removeItem(CURRENT_USER_KEY);
+        localStorage.removeItem('cyve_user');
+        localStorage.removeItem('cyve_token');
         window.location.href = '/';
     };
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, signup, logout, loading }}>
+        <AuthContext.Provider value={{ 
+            user, 
+            isAuthenticated: !!user, 
+            login, 
+            signup, 
+            logout, 
+            loading: initializing || apiLoading,
+            setUser
+        }}>
             {children}
         </AuthContext.Provider>
     );
@@ -126,4 +118,3 @@ export function useAuth() {
     }
     return context;
 }
-
