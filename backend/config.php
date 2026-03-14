@@ -53,13 +53,17 @@ function sanitize($data)
 }
 
 /**
- * Log activity to the audit database
+ * Log activity to the activity_logs database (Feature-02)
  */
-function log_activity($user_id, $action, $details = '')
+function log_activity($user_id, $action_type, $description = '')
 {
     global $conn;
-    $stmt = $conn->prepare("INSERT INTO audit_log (user_id, action, details) VALUES (?, ?, ?)");
-    $stmt->bind_param("iss", $user_id, $action, $details);
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $stmt = $conn->prepare("
+        INSERT INTO activity_logs (user_id, action_type, description, ip_address)
+        VALUES (?, ?, ?, ?)
+    ");
+    $stmt->bind_param("isss", $user_id, $action_type, $description, $ip);
     $stmt->execute();
     $stmt->close();
 }

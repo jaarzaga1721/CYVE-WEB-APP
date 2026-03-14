@@ -9,7 +9,7 @@ class UserRepository {
     }
 
     public function findByIdentity($identity) {
-        $stmt = $this->conn->prepare("SELECT id, username, display_name, password, role, full_name, email FROM users WHERE email = ? OR username = ?");
+        $stmt = $this->conn->prepare("SELECT id, username, display_name, password_hash as password, role, email FROM users WHERE email = ? OR username = ?");
         $stmt->bind_param("ss", $identity, $identity);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -32,7 +32,7 @@ class UserRepository {
     }
 
     public function findById($userId) {
-        $stmt = $this->conn->prepare("SELECT id, email, full_name, username, display_name, role FROM users WHERE id = ?");
+        $stmt = $this->conn->prepare("SELECT id, email, display_name as full_name, username, display_name, role, team FROM users WHERE id = ?");
         $stmt->bind_param("i", $userId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -91,7 +91,7 @@ class UserRepository {
     }
 
     public function resetPassword($userId, $passwordHash) {
-        $stmt = $this->conn->prepare("UPDATE users SET password = ?, reset_token = NULL, reset_expiry = NULL WHERE id = ?");
+        $stmt = $this->conn->prepare("UPDATE users SET password_hash = ?, reset_token = NULL, reset_expiry = NULL WHERE id = ?");
         $stmt->bind_param("si", $passwordHash, $userId);
         $success = $stmt->execute();
         $stmt->close();
@@ -109,7 +109,7 @@ class UserRepository {
     }
 
     public function create($username, $email, $passwordHash, $fullName) {
-        $stmt = $this->conn->prepare("INSERT INTO users (username, email, password, full_name, role) VALUES (?, ?, ?, ?, 'user')");
+        $stmt = $this->conn->prepare("INSERT INTO users (username, email, password_hash, display_name, role) VALUES (?, ?, ?, ?, 'operative')");
         $stmt->bind_param("ssss", $username, $email, $passwordHash, $fullName);
         $success = $stmt->execute();
         $insertId = $this->conn->insert_id;

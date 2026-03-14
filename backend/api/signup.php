@@ -39,9 +39,14 @@ if ($userRepo->exists($email, $username)) {
 $insertId = $userRepo->create($username, $email, $passwordHash, $fullName);
 
 if ($insertId) {
+    log_activity($insertId, 'signup', 'New operative registered');
+    
+    // Session fixation protection
+    session_regenerate_id(true);
+    
     $_SESSION['user_id'] = $insertId;
     $_SESSION['email'] = $email;
-    $_SESSION['role'] = 'user';
+    $_SESSION['role'] = 'operative';
     $_SESSION['username'] = $username;
 
     send_response(true, 'Registration successful', [
@@ -51,7 +56,8 @@ if ($insertId) {
             'display_name' => null,
             'email' => $email,
             'name' => $fullName,
-            'role' => 'user'
+            'role' => 'operative',
+            'csrf_token' => $_SESSION['csrf_token']
         ]
     ], 201);
 }

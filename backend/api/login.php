@@ -19,6 +19,10 @@ $user = $userRepo->findByIdentity($identity);
 if ($user) {
     if (password_verify($password, $user['password'])) {
         log_activity($user['id'], 'login', 'User logged in via API');
+        
+        // Session fixation protection
+        session_regenerate_id(true);
+        
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['email'] = $user['email'];
         $_SESSION['role'] = $user['role'];
@@ -31,12 +35,12 @@ if ($user) {
                 'display_name' => $user['display_name'],
                 'email' => $user['email'],
                 'name' => $user['display_name'] ? $user['display_name'] : strtoupper($user['username']),
-                'role' => $user['role']
+                'role' => $user['role'],
+                'csrf_token' => $_SESSION['csrf_token']
             ]
         ]);
     }
     else {
-        log_activity($user['id'], 'failed_login', 'Invalid password attempt via API');
         send_response(false, 'Invalid credentials. Please verify your password.', [], 401);
     }
 }
