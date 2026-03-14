@@ -136,13 +136,6 @@ Upload `index.html`, `styles.css`, `script.js`, and `design-specs/` to any stati
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
-
-This project is licensed under the MIT License.
-
-## 👥 Authors
-
-- **Aynlie** - [GitHub](https://github.com/Aynlie)
 
 ## 🙏 Acknowledgments
 
