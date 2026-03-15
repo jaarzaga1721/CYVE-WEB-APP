@@ -1,6 +1,5 @@
 <?php
 ob_start();
-header("Content-Type: application/json");
 require_once 'middleware.php';
 require_once 'network/utils.php';
 

@@ -1,6 +1,5 @@
 <?php
 ob_start(); // Buffer any stray output to prevent JSON corruption
-header("Content-Type: application/json");
 require_once 'middleware.php';
 
 use CYVE\Repositories\UserRepository;
