@@ -1,12 +1,16 @@
 <?php
+ob_start(); // Buffer any stray output to prevent JSON corruption
 header("Content-Type: application/json");
 require_once 'middleware.php';
 
 use CYVE\Repositories\UserRepository;
 
-$data = json_decode(file_get_contents("php://input"), true);
+$raw = file_get_contents("php://input");
+$data = json_decode($raw, true);
 
-if (!isset($data['email']) || !isset($data['password'])) {
+// Guard: body missing, empty, or not valid JSON
+if (!is_array($data) || !isset($data['email']) || !isset($data['password'])) {
+    ob_end_clean();
     send_response(false, 'Missing required fields');
 }
 
@@ -28,6 +32,7 @@ if ($user) {
         $_SESSION['role'] = $user['role'];
         $_SESSION['username'] = $user['username'];
 
+        ob_end_clean();
         send_response(true, 'Access granted. Welcome to CYVE HQ.', [
             'user' => [
                 'id' => $user['id'],
@@ -36,15 +41,16 @@ if ($user) {
                 'email' => $user['email'],
                 'name' => $user['display_name'] ? $user['display_name'] : strtoupper($user['username']),
                 'role' => $user['role'],
-                'csrf_token' => $_SESSION['csrf_token']
+                'csrf_token' => $_SESSION['csrf_token'] ?? ''
             ]
         ]);
     }
     else {
+        ob_end_clean();
         send_response(false, 'Invalid credentials. Please verify your password.', [], 401);
     }
 }
 else {
+    ob_end_clean();
     send_response(false, 'Identity not recognized. No such agent in database.', [], 404);
 }
-?>

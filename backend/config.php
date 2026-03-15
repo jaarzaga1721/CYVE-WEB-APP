@@ -4,17 +4,12 @@
  * Handles environment loading, DB connection, CORS, and response utilities.
  */
 
-// 0. Error reporting: suppress for production, show for dev
+// 0. Error reporting: always suppress display_errors so PHP errors never corrupt JSON output
 $is_prod = (getenv('APP_ENV') === 'production');
-if ($is_prod) {
-    error_reporting(0);
-    ini_set('display_errors', '0');
-    ini_set('log_errors', '1');
-    ini_set('error_log', __DIR__ . '/logs/php_errors.log');
-} else {
-    error_reporting(E_ALL);
-    ini_set('display_errors', '1');
-}
+error_reporting(E_ALL);
+ini_set('display_errors', '0');  // Never output errors to response body
+ini_set('log_errors', '1');
+ini_set('error_log', __DIR__ . '/logs/php_errors.log');
 
 // 1. Load Composer Autoloader (which includes Dotenv)
 require_once __DIR__ . '/vendor/autoload.php';
@@ -58,13 +53,19 @@ function sanitize($data)
 function log_activity($user_id, $action_type, $description = '')
 {
     global $conn;
-    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-    $stmt = $conn->prepare("
-        INSERT INTO activity_logs (user_id, action_type, description, ip_address)
-        VALUES (?, ?, ?, ?)
-    ");
-    $stmt->bind_param("isss", $user_id, $action_type, $description, $ip);
-    $stmt->execute();
-    $stmt->close();
+    try {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $stmt = $conn->prepare("
+            INSERT INTO activity_logs (user_id, action_type, description, ip_address)
+            VALUES (?, ?, ?, ?)
+        ");
+        // If prepare() fails (e.g. table missing), skip silently — never crash the caller
+        if (!$stmt) return;
+        $stmt->bind_param("isss", $user_id, $action_type, $description, $ip);
+        $stmt->execute();
+        $stmt->close();
+    } catch (\Throwable $e) {
+        // Log to file but never propagate — activity logging must never break core flows
+        error_log('[CYVE] log_activity failed: ' . $e->getMessage());
+    }
 }
-?>

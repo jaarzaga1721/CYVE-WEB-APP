@@ -13,6 +13,10 @@ $is_production = (($_ENV['APP_ENV'] ?? 'development') === 'production');
 $allowed_origins = array_filter([
     'http://localhost:3000',
     'http://localhost:3001',
+    'http://localhost:3002',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+    'http://127.0.0.1:3002',
     $_ENV['FRONTEND_URL'] ?? null,  // e.g. https://cyve.ph
 ]);
 
@@ -20,8 +24,8 @@ $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 if (in_array($origin, $allowed_origins, true)) {
     header("Access-Control-Allow-Origin: $origin");
 } elseif (!$is_production) {
-    // In development, allow any localhost origin
-    if (preg_match('/^https?:\/\/localhost(:\d+)?$/', $origin)) {
+    // In development, allow any localhost or 127.0.0.1 origin
+    if (preg_match('/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/', $origin)) {
         header("Access-Control-Allow-Origin: $origin");
     }
 }
@@ -84,9 +88,13 @@ function require_admin() {
 
 function log_admin_activity($admin_id, $action, $target_user = null) {
     global $conn;
-    $stmt = $conn->prepare("INSERT INTO admin_logs (admin_id, action, target_user) VALUES (?, ?, ?)");
-    $stmt->bind_param("isi", $admin_id, $action, $target_user);
-    $stmt->execute();
-    $stmt->close();
+    try {
+        $stmt = $conn->prepare("INSERT INTO admin_logs (admin_id, action, target_user) VALUES (?, ?, ?)");
+        if (!$stmt) return;
+        $stmt->bind_param("isi", $admin_id, $action, $target_user);
+        $stmt->execute();
+        $stmt->close();
+    } catch (\Throwable $e) {
+        error_log('[CYVE] log_admin_activity failed: ' . $e->getMessage());
+    }
 }
-?>

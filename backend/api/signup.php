@@ -1,4 +1,5 @@
 <?php
+ob_start();
 header("Content-Type: application/json");
 require_once 'middleware.php';
 require_once 'network/utils.php';
@@ -6,6 +7,7 @@ require_once 'network/utils.php';
 $data = json_decode(file_get_contents("php://input"), true);
 
 if (!isset($data['name']) || !isset($data['email']) || !isset($data['password'])) {
+    ob_end_clean();
     send_response(false, 'Missing required fields', [], 400);
 }
 
@@ -14,10 +16,12 @@ $email = trim($data['email']);
 $passwordRaw = $data['password'];
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    ob_end_clean();
     send_response(false, 'Invalid email format', [], 400);
 }
 
 if (strlen($passwordRaw) < 8) {
+    ob_end_clean();
     send_response(false, 'Password must be at least 8 characters', [], 400);
 }
 
@@ -33,6 +37,7 @@ use CYVE\Repositories\UserRepository;
 $userRepo = new UserRepository($conn);
 
 if ($userRepo->exists($email, $username)) {
+    ob_end_clean();
     send_response(false, 'Email or username already exists', [], 409);
 }
 
@@ -46,9 +51,10 @@ if ($insertId) {
     
     $_SESSION['user_id'] = $insertId;
     $_SESSION['email'] = $email;
-    $_SESSION['role'] = 'operative';
+    $_SESSION['role'] = 'user';
     $_SESSION['username'] = $username;
 
+    ob_end_clean();
     send_response(true, 'Registration successful', [
         'user' => [
             'id' => $insertId,
@@ -56,12 +62,13 @@ if ($insertId) {
             'display_name' => null,
             'email' => $email,
             'name' => $fullName,
-            'role' => 'operative',
+            'role' => 'user',
             'csrf_token' => $_SESSION['csrf_token']
         ]
     ], 201);
 }
 else {
+    ob_end_clean();
     send_response(false, 'Registration failed', [], 500);
 }
 ?>

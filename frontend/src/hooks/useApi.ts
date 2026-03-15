@@ -28,15 +28,20 @@ export const useApi = () => {
                 },
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Network response was not ok');
+            const contentType = response.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                throw new Error('Server returned an unexpected response. Check backend logs.');
             }
 
+            const text = await response.text();
+            if (!text) {
+                throw new Error('Server returned an empty response.');
+            }
+            const data = JSON.parse(text);
+
             return {
-                success: true,
-                message: data.message || 'Success',
+                success: data.success ?? response.ok,
+                message: data.message || (response.ok ? 'Success' : 'Request failed'),
                 data: data,
             };
         } catch (err: any) {

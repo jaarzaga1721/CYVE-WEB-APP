@@ -17,4 +17,3 @@ function send_response($success, $message, $data = [], $code = 200)
     echo json_encode($response);
     exit();
 }
-?>
