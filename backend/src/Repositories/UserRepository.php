@@ -1,27 +1,31 @@
 <?php
 namespace CYVE\Repositories;
 
-class UserRepository {
+class UserRepository
+{
     private $conn;
 
-    public function __construct($conn) {
+    public function __construct($conn)
+    {
         $this->conn = $conn;
     }
 
-    public function findByIdentity($identity) {
-        $stmt = $this->conn->prepare("SELECT id, username, display_name, password, role, email FROM users WHERE email = ? OR username = ?");
+    public function findByIdentity($identity)
+    {
+        $stmt = $this->conn->prepare("SELECT id, username, display_name, password_hash as password, role, email FROM users WHERE email = ? OR username = ?");
         $stmt->bind_param("ss", $identity, $identity);
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
 
-    public function getProfileData($userId) {
+    public function getProfileData($userId)
+    {
         $stmt = $this->conn->prepare("SELECT profile_data FROM users WHERE id = ?");
         $stmt->bind_param("i", $userId);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
             $stmt->close();
@@ -31,12 +35,13 @@ class UserRepository {
         return false;
     }
 
-    public function findById($userId) {
+    public function findById($userId)
+    {
         $stmt = $this->conn->prepare("SELECT id, email, display_name as full_name, username, display_name, role, team FROM users WHERE id = ?");
         $stmt->bind_param("i", $userId);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
             $stmt->close();
@@ -46,7 +51,8 @@ class UserRepository {
         return null;
     }
 
-    public function updateProfile($userId, $profileData) {
+    public function updateProfile($userId, $profileData)
+    {
         $stmt = $this->conn->prepare("UPDATE users SET profile_data = ? WHERE id = ?");
         $stmt->bind_param("si", $profileData, $userId);
         $success = $stmt->execute();
@@ -54,7 +60,8 @@ class UserRepository {
         return $success;
     }
 
-    public function updateDisplayName($userId, $displayName) {
+    public function updateDisplayName($userId, $displayName)
+    {
         $stmt = $this->conn->prepare("UPDATE users SET display_name = ? WHERE id = ?");
         $stmt->bind_param("si", $displayName, $userId);
         $success = $stmt->execute();
@@ -62,7 +69,8 @@ class UserRepository {
         return $success;
     }
 
-    public function findByEmail($email) {
+    public function findByEmail($email)
+    {
         $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -72,7 +80,8 @@ class UserRepository {
         return $user;
     }
 
-    public function createPasswordReset($userId, $token, $expiry) {
+    public function createPasswordReset($userId, $token, $expiry)
+    {
         $stmt = $this->conn->prepare("UPDATE users SET reset_token = ?, reset_expiry = ? WHERE id = ?");
         $stmt->bind_param("ssi", $token, $expiry, $userId);
         $success = $stmt->execute();
@@ -80,7 +89,8 @@ class UserRepository {
         return $success;
     }
 
-    public function findByValidResetToken($token) {
+    public function findByValidResetToken($token)
+    {
         $stmt = $this->conn->prepare("SELECT id FROM users WHERE reset_token = ? AND reset_expiry > NOW()");
         $stmt->bind_param("s", $token);
         $stmt->execute();
@@ -90,15 +100,17 @@ class UserRepository {
         return $user;
     }
 
-    public function resetPassword($userId, $passwordHash) {
-        $stmt = $this->conn->prepare("UPDATE users SET password = ?, reset_token = NULL, reset_expiry = NULL WHERE id = ?");
+    public function resetPassword($userId, $passwordHash)
+    {
+        $stmt = $this->conn->prepare("UPDATE users SET password_hash = ?, reset_token = NULL, reset_expiry = NULL WHERE id = ?");
         $stmt->bind_param("si", $passwordHash, $userId);
         $success = $stmt->execute();
         $stmt->close();
         return $success;
     }
 
-    public function exists($email, $username) {
+    public function exists($email, $username)
+    {
         $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
         $stmt->bind_param("ss", $email, $username);
         $stmt->execute();
@@ -108,21 +120,23 @@ class UserRepository {
         return $exists;
     }
 
-    public function create($username, $email, $passwordHash, $fullName) {
-        $stmt = $this->conn->prepare("INSERT INTO users (username, email, password, display_name, full_name, role) VALUES (?, ?, ?, ?, ?, 'user')");
-        $stmt->bind_param("sssss", $username, $email, $passwordHash, $fullName, $fullName);
+    public function create($username, $email, $passwordHash, $fullName)
+    {
+        $stmt = $this->conn->prepare("INSERT INTO users (username, email, password_hash, display_name, role) VALUES (?, ?, ?, ?, 'operative')");
+        $stmt->bind_param("ssss", $username, $email, $passwordHash, $fullName);
         $success = $stmt->execute();
         $insertId = $this->conn->insert_id;
         $stmt->close();
         return $success ? $insertId : false;
     }
 
-    public function getLeaderboard() {
+    public function getLeaderboard()
+    {
         $query = "
             SELECT 
                 u.id, 
                 u.username, 
-                u.full_name,
+                u.display_name,
                 u.profile_data,
                 r.steps as roadmap_steps,
                 (SELECT COUNT(*) FROM events e WHERE e.created_by = u.id AND e.status = 'approved') as event_count
@@ -136,7 +150,7 @@ class UserRepository {
 
         while ($row = $result->fetch_assoc()) {
             $score = 0;
-            
+
             if ($row['roadmap_steps']) {
                 $steps = json_decode($row['roadmap_steps'], true);
                 if (is_array($steps)) {
@@ -163,14 +177,14 @@ class UserRepository {
             $leaderboard[] = [
                 'id' => $row['id'],
                 'username' => $row['username'],
-                'display_name' => $row['full_name'] ?: $row['username'],
+                'display_name' => $row['display_name'] ?: $row['username'],
                 'score' => $score,
                 'team' => $team,
                 'missions' => intval($row['event_count'])
             ];
         }
 
-        usort($leaderboard, function($a, $b) {
+        usort($leaderboard, function ($a, $b) {
             return $b['score'] <=> $a['score'];
         });
 
