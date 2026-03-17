@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -52,10 +52,9 @@ function ResetPasswordForm() {
         setLoading(true);
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reset_password.php`, {
+            const res = await fetch(`${API_BASE_URL}/reset_password.php`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
                 body: JSON.stringify({ token, password }),
             });
             const data = await res.json();
@@ -89,12 +88,12 @@ function ResetPasswordForm() {
 
             {message && (
                 <div style={{ ...alertBase, borderColor: '#4caf50', background: 'rgba(76,175,80,0.08)', color: '#4caf50', marginBottom: '1.5rem' }}>
-                    ✓ {message} — Redirecting to login...
+                    Γ£ô {message} ΓÇö Redirecting to login...
                 </div>
             )}
             {error && (
                 <div style={{ ...alertBase, borderColor: '#e05252', background: 'rgba(224,82,82,0.08)', color: '#ff6666', marginBottom: '1.5rem' }}>
-                    ✗ {error}
+                    Γ£ù {error}
                 </div>
             )}
 
@@ -158,12 +157,12 @@ function ResetPasswordForm() {
                         cursor: loading || !token ? 'not-allowed' : 'pointer',
                     }}
                 >
-                    {loading ? 'UPDATING_CREDENTIALS...' : 'EXECUTE_CREDENTIAL_RESET →'}
+                    {loading ? 'UPDATING_CREDENTIALS...' : 'EXECUTE_CREDENTIAL_RESET ΓåÆ'}
                 </button>
             </form>
 
             <div style={footerStyle}>
-                <Link href="/login" style={linkStyle}>← RETURN_TO_ACCESS</Link>
+                <Link href="/login" style={linkStyle}>ΓåÉ RETURN_TO_ACCESS</Link>
                 <Link href="/forgot-password" style={linkStyle}>NEW_RESET_LINK</Link>
             </div>
         </div>

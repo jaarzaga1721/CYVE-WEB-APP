@@ -1,4 +1,7 @@
 <?php
+// STEP 1: CORS always comes first — before everything
+require_once __DIR__ . '/cors.php';
+
 require_once 'middleware.php';
 
 $data = json_decode(file_get_contents("php://input"), true);

@@ -1,0 +1,16 @@
+﻿diff --git a/frontend/src/app/reset-password/page.tsx b/frontend/src/app/reset-password/page.tsx
+index 6de4bef..5ddbf3e 100644
+--- a/frontend/src/app/reset-password/page.tsx
++++ b/frontend/src/app/reset-password/page.tsx
+@@ -52,9 +52,10 @@ function ResetPasswordForm() {
+         setLoading(true);
+ 
+         try {
+-            const res = await fetch(`${API_BASE_URL}/reset_password.php`, {
++            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reset_password.php`, {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json' },
++                credentials: 'include',
+                 body: JSON.stringify({ token, password }),
+             });
+             const data = await res.json();

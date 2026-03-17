@@ -1,10 +1,15 @@
 <?php
-require_once 'middleware.php';
-header("Content-Type: application/json");
+// STEP 1: CORS always comes first — before everything
+require_once __DIR__ . '/cors.php';
 
+// STEP 2: Auth check comes AFTER cors (this fixes the 401 errors)
 if (!isset($_SESSION['user_id'])) {
-    send_response(false, 'Unauthorized. Please log in.', [], 401);
+    echo json_encode(['error' => 'Unauthorized', 'code' => 401]);
+    http_response_code(401);
+    exit();
 }
+
+require_once 'middleware.php';
 
 $user_id = $_SESSION['user_id'];
 

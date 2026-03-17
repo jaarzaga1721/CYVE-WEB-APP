@@ -33,7 +33,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         const checkSession = async () => {
-            // Check local storage first for immediate UI
             const savedUser = localStorage.getItem('cyve_user');
             if (savedUser) {
                 try {
@@ -43,13 +42,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 }
             }
 
-            const result = await callApi('check_session.php');
-            if (result.success && result.data?.user) {
-                setUser(result.data.user);
-                localStorage.setItem('cyve_user', JSON.stringify(result.data.user));
-            } else {
-                setUser(null);
-                localStorage.removeItem('cyve_user');
+            try {
+                const result = await callApi('check_session.php');
+                if (result.success && result.data?.user) {
+                    setUser(result.data.user);
+                    localStorage.setItem('cyve_user', JSON.stringify(result.data.user));
+                } else {
+                    // Don't clear if it was just a network error, but if unauthorized, clear
+                    if (result.message === 'Unauthorized' || !result.success) {
+                        setUser(null);
+                        localStorage.removeItem('cyve_user');
+                        localStorage.removeItem('cyve_token');
+                    }
+                }
+            } catch (err) {
+                console.error("Session check failed", err);
             }
             setInitializing(false);
         };
@@ -65,9 +72,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (result.success && result.data?.user) {
             setUser(result.data.user);
             localStorage.setItem('cyve_user', JSON.stringify(result.data.user));
-            if (result.data.token) {
-                localStorage.setItem('cyve_token', result.data.token);
-            }
+            localStorage.setItem('cyve_token', result.data.token ?? '');
+            window.location.href = '/dashboard';
         }
         return { success: result.success, message: result.message };
     };
@@ -81,15 +87,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (result.success && result.data?.user) {
             setUser(result.data.user);
             localStorage.setItem('cyve_user', JSON.stringify(result.data.user));
-            if (result.data.token) {
-                localStorage.setItem('cyve_token', result.data.token);
-            }
+            localStorage.setItem('cyve_token', result.data.token ?? '');
+            window.location.href = '/dashboard';
         }
         return { success: result.success, message: result.message };
     };
 
     const logout = async () => {
-        await callApi('logout.php');
+        try {
+            await callApi('logout.php');
+        } catch (e) {}
         setUser(null);
         localStorage.removeItem('cyve_user');
         localStorage.removeItem('cyve_token');

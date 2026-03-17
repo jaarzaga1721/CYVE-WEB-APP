@@ -45,7 +45,7 @@ export default function PrivacySettings() {
     setSaving(true);
     setMessage('');
     try {
-      const res = await fetch(`${API_BASE_URL}/network/privacy.php`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/network/privacy.php`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

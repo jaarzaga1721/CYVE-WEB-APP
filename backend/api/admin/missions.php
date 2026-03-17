@@ -1,6 +1,16 @@
 <?php
+// STEP 1: CORS always comes first — before everything
+require_once __DIR__ . '/../cors.php';
+
+// STEP 2: Auth check comes AFTER cors (this fixes the 401 errors)
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['error' => 'Unauthorized', 'code' => 401]);
+    http_response_code(401);
+    exit();
+}
+
 require_once '../middleware.php';
-header("Content-Type: application/json");
+require_once '../response.php';
 
 // Feature-01 RBAC Check
 if (!isset($_SESSION['user_id'])) {

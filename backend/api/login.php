@@ -1,5 +1,7 @@
 <?php
-ob_start(); // Buffer any stray output to prevent JSON corruption
+// STEP 1: CORS always comes first — before everything
+require_once __DIR__ . '/cors.php';
+
 require_once 'middleware.php';
 
 use CYVE\Repositories\UserRepository;

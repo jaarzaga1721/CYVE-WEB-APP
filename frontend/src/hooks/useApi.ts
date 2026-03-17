@@ -19,7 +19,8 @@ export const useApi = () => {
         setError(null);
 
         try {
-            const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || API_BASE_URL;
+            const response = await fetch(`${baseUrl}/${endpoint}`, {
                 credentials: 'include',
                 ...options,
                 headers: {

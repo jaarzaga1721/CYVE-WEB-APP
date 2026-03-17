@@ -61,7 +61,20 @@ CYVE/
    ```
 
 3. **Run the development server**
+   
+   **Option A: Automatic (Recommended)**
    ```bash
+   # Run the startup script from the root directory
+   .\run-cyve.ps1
+   ```
+
+   **Option B: Manual**
+   ```bash
+   # Terminal 1 (Backend)
+   php -S 127.0.0.1:8000 -t .
+
+   # Terminal 2 (Frontend)
+   cd frontend
    npm run dev
    ```
 

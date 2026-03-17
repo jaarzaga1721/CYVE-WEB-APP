@@ -21,7 +21,7 @@ export default function Header() {
         if (!isAuthenticated || isAuthPage) return;
         const fetchPending = async () => {
             try {
-                const res = await fetch(`${API_BASE_URL}/network/pending.php`, { credentials: 'include' });
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/network/pending.php`, { credentials: 'include' });
                 const data = await res.json();
                 if (data.success) setPendingCount(data.total_pending ?? 0);
             } catch { /* silent */ }

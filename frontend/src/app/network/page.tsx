@@ -24,7 +24,7 @@ export default function NetworkPage() {
   const [loading, setLoading] = useState(false);
 
   const apiFetch = useCallback(async (path: string, opts?: RequestInit) => {
-    const res = await fetch(`${API_BASE_URL}/${path}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${path}`, {
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       ...opts,

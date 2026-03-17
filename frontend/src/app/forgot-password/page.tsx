@@ -17,9 +17,10 @@ export default function ForgotPasswordPage() {
         setLoading(true);
 
         try {
-            const res = await fetch(`${API_BASE_URL}/request_reset.php`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/request_reset.php`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({ email }),
             });
             const data = await res.json();

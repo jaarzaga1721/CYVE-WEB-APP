@@ -82,7 +82,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
             }
 
             try {
-                const res = await fetch(`${API_BASE_URL}/profile.php`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profile.php`, {
                     credentials: 'include'
                 });
                 const data = await res.json();
@@ -110,7 +110,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     const saveProfileToBackend = async (newProfile: ProfileData) => {
         setProfile(newProfile);
         try {
-            await fetch(`${API_BASE_URL}/profile.php`, {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profile.php`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newProfile),
