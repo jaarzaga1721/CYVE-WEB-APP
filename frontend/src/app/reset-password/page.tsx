@@ -52,7 +52,7 @@ function ResetPasswordForm() {
         setLoading(true);
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reset_password.php`, {
+            const res = await fetch(`${API_BASE_URL}/reset_password.php`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
