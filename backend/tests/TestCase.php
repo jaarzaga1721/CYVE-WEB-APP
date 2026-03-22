@@ -4,6 +4,13 @@ namespace CYVE\Tests;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use mysqli;
 
+if (!function_exists('log_activity')) {
+    function log_activity($user_id, $action_type, $description = '') {}
+}
+if (!function_exists('log_admin_activity')) {
+    function log_admin_activity($admin_id, $action, $target_user = null) {}
+}
+
 abstract class TestCase extends BaseTestCase {
     protected $conn;
 

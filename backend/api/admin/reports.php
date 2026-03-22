@@ -65,6 +65,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     ");
     $reports['users_by_rank'] = $res->fetch_all(MYSQLI_ASSOC);
 
+    // 6. Recent Audit Trail (Feature-02)
+    $res = $conn->query("
+        SELECT u.username, a.action_type, a.description, a.created_at 
+        FROM activity_logs a 
+        JOIN users u ON a.user_id = u.id 
+        ORDER BY a.created_at DESC 
+        LIMIT 20
+    ");
+    $reports['recent_audit_trail'] = $res->fetch_all(MYSQLI_ASSOC);
+
+    // 7. Pending Approvals (Feature-03)
+    $res = $conn->query("SELECT COUNT(*) as pending_count FROM team_change_requests WHERE status = 'pending'");
+    $reports['pending_approvals'] = $res->fetch_row()[0];
+
     send_response(true, 'Reports successfully compiled.', ['reports' => $reports]);
 } else {
     send_response(false, 'Method not allowed.', [], 405);
