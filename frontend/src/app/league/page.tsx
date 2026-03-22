@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useProfile } from '@/context/ProfileContext';
@@ -78,6 +78,134 @@ const teams: TeamCard[] = [
     }
 ];
 
+interface CohortData {
+    id: string;
+    name: string;
+    batch: string;
+    team: 'red' | 'blue' | 'purple';
+    teamColor: string;
+    status: 'ACTIVE' | 'ENROLLING' | 'UPCOMING';
+    org: { name: string; description: string; founded: string; website: string };
+    mentor: { name: string; role: string; };
+    schedule: { start: string; end: string; cadence: string; time: string; };
+    curriculum: string[];
+    operatives: { total: number; slots: number; members: { name: string; rank: string }[] };
+    requirements: string[];
+    btnLabel: string;
+}
+
+const COHORTS: CohortData[] = [
+    {
+        id: 'ph-alpha',
+        name: 'PH ALPHA',
+        batch: 'BATCH 01',
+        team: 'red',
+        teamColor: '#e05252',
+        status: 'ACTIVE',
+        org: {
+            name: 'CYVE Offensive Security Division',
+            description: 'The first Philippine cohort dedicated to offensive security training, culminating in a live red team exercise against simulated enterprise infrastructure.',
+            founded: 'Jan 2026',
+            website: 'https://cyve.ph/red'
+        },
+        mentor: { name: 'Lt. Cmdr. Alex Reyes', role: 'Lead Penetration Tester • OSCP • CEH' },
+        schedule: { start: 'Jan 15, 2026', end: 'Jul 15, 2026', cadence: 'Every Saturday', time: '09:00 – 12:00 PHT' },
+        curriculum: [
+            'Module 01 — Network Reconnaissance & OSINT',
+            'Module 02 — Exploitation Fundamentals',
+            'Module 03 — Web Application Attacks',
+            'Module 04 — Post-Exploitation & Pivoting',
+            'Module 05 — Active Directory Attacks',
+            'Module 06 — Live Red Team Capstone'
+        ],
+        operatives: {
+            total: 42,
+            slots: 50,
+            members: [
+                { name: 'J. Santos', rank: 'Specialist' },
+                { name: 'M. Cruz', rank: 'Operative' },
+                { name: 'R. Garcia', rank: 'Operative' },
+                { name: 'A. Reyes', rank: 'Expert' },
+                { name: 'C. Lim', rank: 'Trainee' },
+            ]
+        },
+        requirements: ['CompTIA Security+', 'Basic Linux CLI', 'Networking Fundamentals'],
+        btnLabel: 'JOIN UNIT'
+    },
+    {
+        id: 'ph-bravo',
+        name: 'PH BRAVO',
+        batch: 'BATCH 02',
+        team: 'blue',
+        teamColor: '#4a9eff',
+        status: 'ACTIVE',
+        org: {
+            name: 'CYVE Defensive Operations Wing',
+            description: 'A defensive-focused cohort building SOC analysts and incident responders ready to monitor, triage, and neutralize threats in a live SIEM environment.',
+            founded: 'Feb 2026',
+            website: 'https://cyve.ph/blue'
+        },
+        mentor: { name: 'Analyst Maya Ocampo', role: 'Senior SOC Lead • Splunk Certified • GCIH' },
+        schedule: { start: 'Feb 01, 2026', end: 'Aug 01, 2026', cadence: 'Every Sunday', time: '14:00 – 17:00 PHT' },
+        curriculum: [
+            'Module 01 — Security Monitoring & SIEM',
+            'Module 02 — Log Analysis & Threat Correlation',
+            'Module 03 — Incident Response Playbooks',
+            'Module 04 — Digital Forensics Fundamentals',
+            'Module 05 — Threat Intelligence & IOC Hunting',
+            'Module 06 — Live IR Capstone Exercise'
+        ],
+        operatives: {
+            total: 55,
+            slots: 60,
+            members: [
+                { name: 'P. Dela Cruz', rank: 'Specialist' },
+                { name: 'L. Bautista', rank: 'Operative' },
+                { name: 'K. Tan', rank: 'Expert' },
+                { name: 'N. Gomez', rank: 'Trainee' },
+                { name: 'V. Ramos', rank: 'Operative' },
+            ]
+        },
+        requirements: ['CompTIA Security+', 'Basic Networking', 'Familiarity with Log Analysis'],
+        btnLabel: 'JOIN UNIT'
+    },
+    {
+        id: 'ph-charlie',
+        name: 'PH CHARLIE',
+        batch: 'BATCH 03',
+        team: 'purple',
+        teamColor: '#9b59f5',
+        status: 'ENROLLING',
+        org: {
+            name: 'CYVE Hybrid Strategy Unit',
+            description: 'The elite purple team cohort that bridges offensive and defensive operations, focusing on threat modeling, red-blue collaboration, and ATT&CK framework mastery.',
+            founded: 'Apr 2026',
+            website: 'https://cyve.ph/purple'
+        },
+        mentor: { name: 'Dr. Carlo Villanueva', role: 'Chief Security Strategist • CISSP • ATT&CK Practitioner' },
+        schedule: { start: 'Apr 20, 2026', end: 'Oct 20, 2026', cadence: 'Every Saturday & Sunday', time: '10:00 – 13:00 PHT' },
+        curriculum: [
+            'Module 01 — ATT&CK Framework & Threat Modeling',
+            'Module 02 — Offensive Emulation Planning',
+            'Module 03 — Detection Engineering',
+            'Module 04 — Purple Team Collaboration Protocols',
+            'Module 05 — Metrics, Reporting & KPIs',
+            'Module 06 — Full-Spectrum Capstone'
+        ],
+        operatives: {
+            total: 18,
+            slots: 30,
+            members: [
+                { name: 'S. Aquino', rank: 'Recruit' },
+                { name: 'D. Flores', rank: 'Recruit' },
+                { name: 'I. Mendez', rank: 'Trainee' },
+            ]
+        },
+        requirements: ['Completion of a Red or Blue Team cohort', 'Security+', 'MITRE ATT&CK Basics'],
+        btnLabel: 'ENROLL NOW'
+    }
+];
+
 export default function LeaguePage() {
     const [currentIndex, setCurrentIndex] = useState(1); // Start with Purple in center
     const { profile, updateProfile } = useProfile();
@@ -87,6 +215,9 @@ export default function LeaguePage() {
     const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
     const [touchStart, setTouchStart] = useState<number | null>(null);
     const [touchEnd, setTouchEnd] = useState<number | null>(null);
+    const [selectedCohort, setSelectedCohort] = useState<CohortData | null>(null);
+    const [enrolled, setEnrolled] = useState(false);
+    const [acknowledged, setAcknowledged] = useState(false);
 
     const minSwipeDistance = 50;
 
@@ -101,6 +232,17 @@ export default function LeaguePage() {
         };
         fetchLeaderboard();
     }, [callApi]);
+
+    const handleJoinUnit = useCallback((cohort: CohortData) => {
+        setEnrolled(false);
+        setAcknowledged(false);
+        setSelectedCohort(cohort);
+    }, []);
+
+    const handleConfirmEnrol = () => {
+        if (!acknowledged) return;
+        setEnrolled(true);
+    };
 
     const handleJoinLeague = (id: 'red' | 'blue' | 'purple') => {
         if (!isAuthenticated) {
@@ -287,53 +429,40 @@ export default function LeaguePage() {
                 <div className={styles.cohortsSection}>
                     <h2 className={styles.sectionHeading}>ACTIVE COHORTS</h2>
                     <div className={styles.cohortsGrid}>
-                        <div className={styles.cohortCard} style={{ background: 'linear-gradient(160deg, #2a0808 0%, #1a0505 40%, #0d0303 100%)', borderColor: 'rgba(224, 82, 82, 0.2)' }}>
-                            <div className={styles.cohortHeader}>
-                                <div>
-                                    <h3>BATCH 01 — PH ALPHA</h3>
-                                    <span className={styles.cohortSub}>Started: Jan 2026</span>
+                        {COHORTS.map((cohort) => {
+                            const fillPct = Math.round((cohort.operatives.total / cohort.operatives.slots) * 100);
+                            return (
+                                <div
+                                    key={cohort.id}
+                                    className={styles.cohortCard}
+                                    style={{ background: `linear-gradient(160deg, ${cohort.teamColor}18 0%, #050505 60%)`, borderColor: `${cohort.teamColor}33`, '--cohort-color': cohort.teamColor } as React.CSSProperties}
+                                >
+                                    <div className={styles.cohortHeader}>
+                                        <div>
+                                            <h3>{cohort.batch} &mdash; {cohort.name}</h3>
+                                            <span className={styles.cohortSub}>Started: {cohort.schedule.start}</span>
+                                        </div>
+                                        <div className={styles.statusBadge} style={{ color: cohort.teamColor, border: `1px solid ${cohort.teamColor}`, padding: '2px 8px', borderRadius: '4px' }}>
+                                            {cohort.team.toUpperCase()}_TEAM
+                                        </div>
+                                    </div>
+                                    <div className={styles.cohortStats}>
+                                        <div className={styles.statValue}>{cohort.operatives.total} <span>OPERATIVES</span></div>
+                                        <div className={styles.statValue}>{cohort.status === 'UPCOMING' ? '---' : `${fillPct}%`} <span>{cohort.status === 'UPCOMING' ? 'AVG_PROGRESS' : 'SLOTS_FILLED'}</span></div>
+                                    </div>
+                                    <div className={styles.progressBarBg}>
+                                        <div className={styles.progressBarFill} style={{ width: `${fillPct}%`, background: cohort.teamColor }} />
+                                    </div>
+                                    <button
+                                        className={styles.cohortBtn}
+                                        style={{ borderColor: cohort.teamColor, color: cohort.teamColor }}
+                                        onClick={() => handleJoinUnit(cohort)}
+                                    >
+                                        {cohort.btnLabel}
+                                    </button>
                                 </div>
-                                <div className={styles.statusBadge} style={{ color: '#e05252', borderColor: '#e05252', padding: '2px 8px', border: '1px solid', borderRadius: '4px' }}>RED_TEAM</div>
-                            </div>
-                            <div className={styles.cohortStats}>
-                                <div className={styles.statValue}>42 <span>OPERATIVES</span></div>
-                                <div className={styles.statValue}>68% <span>AVG_PROGRESS</span></div>
-                            </div>
-                            <div className={styles.progressBarBg}><div className={styles.progressBarFill} style={{ width: '68%', background: '#e05252' }}></div></div>
-                            <button className={styles.cohortBtn}>JOIN UNIT</button>
-                        </div>
-                        
-                        <div className={styles.cohortCard} style={{ background: 'linear-gradient(160deg, #081428 0%, #050d1a 40%, #030810 100%)', borderColor: 'rgba(74, 158, 255, 0.2)' }}>
-                            <div className={styles.cohortHeader}>
-                                <div>
-                                    <h3>BATCH 02 — PH BRAVO</h3>
-                                    <span className={styles.cohortSub}>Started: Feb 2026</span>
-                                </div>
-                                <div className={styles.statusBadge} style={{ color: '#4a9eff', borderColor: '#4a9eff', padding: '2px 8px', border: '1px solid', borderRadius: '4px' }}>BLUE_TEAM</div>
-                            </div>
-                            <div className={styles.cohortStats}>
-                                <div className={styles.statValue}>55 <span>OPERATIVES</span></div>
-                                <div className={styles.statValue}>31% <span>AVG_PROGRESS</span></div>
-                            </div>
-                            <div className={styles.progressBarBg}><div className={styles.progressBarFill} style={{ width: '31%', background: '#4a9eff' }}></div></div>
-                            <button className={styles.cohortBtn}>JOIN UNIT</button>
-                        </div>
-
-                        <div className={styles.cohortCard} style={{ background: 'linear-gradient(160deg, #1a0828 0%, #120518 40%, #0a0310 100%)', borderColor: 'rgba(155, 89, 247, 0.2)' }}>
-                            <div className={styles.cohortHeader}>
-                                <div>
-                                    <h3>BATCH 03 — PH CHARLIE</h3>
-                                    <span className={styles.cohortSub}>Starts: Apr 2026</span>
-                                </div>
-                                <div className={styles.statusBadge} style={{ color: '#9b59f5', borderColor: '#9b59f5', padding: '2px 8px', border: '1px solid', borderRadius: '4px' }}>PURPLE_TEAM</div>
-                            </div>
-                            <div className={styles.cohortStats}>
-                                <div className={styles.statValue}>18 <span>ENROLLED</span></div>
-                                <div className={styles.statValue}>--- <span>AVG_PROGRESS</span></div>
-                            </div>
-                            <div className={styles.progressBarBg}><div className={styles.progressBarFill} style={{ width: '0%', background: '#9b59f5' }}></div></div>
-                            <button className={styles.cohortBtn}>ENROLL NOW</button>
-                        </div>
+                            );
+                        })}
                     </div>
                 </div>
 
@@ -424,11 +553,221 @@ export default function LeaguePage() {
                     </div>
                 </div>
             </div>
+
+            {/* COHORT DETAIL MODAL */}
+            <AnimatePresence>
+                {selectedCohort && (
+                    <CohortDetailModal
+                        cohort={selectedCohort}
+                        enrolled={enrolled}
+                        acknowledged={acknowledged}
+                        onAcknowledge={() => setAcknowledged(v => !v)}
+                        onConfirm={handleConfirmEnrol}
+                        onClose={() => setSelectedCohort(null)}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 }
 
 // Team Icons - Gold Standard Line Art
+// ─── Cohort Detail Modal ────────────────────────────────────────────────────
+function CohortDetailModal({
+    cohort,
+    enrolled,
+    acknowledged,
+    onAcknowledge,
+    onConfirm,
+    onClose,
+}: {
+    cohort: CohortData;
+    enrolled: boolean;
+    acknowledged: boolean;
+    onAcknowledge: () => void;
+    onConfirm: () => void;
+    onClose: () => void;
+}) {
+    const fillPct = Math.round((cohort.operatives.total / cohort.operatives.slots) * 100);
+    const slotsFree = cohort.operatives.slots - cohort.operatives.total;
+
+    return (
+        <motion.div
+            className={styles.cohortModalBackdrop}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+        >
+            <motion.div
+                className={styles.cohortModal}
+                style={{ '--cohort-color': cohort.teamColor } as React.CSSProperties}
+                initial={{ opacity: 0, y: 60, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 60, scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 28 }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* Scanline effect */}
+                <div className={styles.modalScanline} />
+
+                {/* Header */}
+                <div className={styles.modalHeader}>
+                    <div className={styles.modalHeaderLeft}>
+                        <span className={styles.modalBatch}>{cohort.batch}</span>
+                        <h2 className={styles.modalTitle} style={{ color: cohort.teamColor }}>{cohort.name}</h2>
+                        <span className={styles.modalStatusBadge} style={{ background: `${cohort.teamColor}22`, color: cohort.teamColor, border: `1px solid ${cohort.teamColor}` }}>
+                            {cohort.status}
+                        </span>
+                    </div>
+                    <button className={styles.modalClose} onClick={onClose} aria-label="Close">✕</button>
+                </div>
+
+                <div className={styles.modalBody}>
+                    <div className={styles.modalLeft}>
+                        {/* Organization */}
+                        <section className={styles.modalSection}>
+                            <div className={styles.sectionLabel}>ORGANIZATION</div>
+                            <div className={styles.orgPanel}>
+                                <div className={styles.orgName}>{cohort.org.name}</div>
+                                <p className={styles.orgDesc}>{cohort.org.description}</p>
+                                <div className={styles.orgMeta}>
+                                    <span>📅 Est. {cohort.org.founded}</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* Mentor */}
+                        <section className={styles.modalSection}>
+                            <div className={styles.sectionLabel}>COMMANDING OFFICER</div>
+                            <div className={styles.mentorCard}>
+                                <div className={styles.mentorAvatar} style={{ background: `${cohort.teamColor}22`, borderColor: cohort.teamColor }}>
+                                    {cohort.mentor.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <div className={styles.mentorName}>{cohort.mentor.name}</div>
+                                    <div className={styles.mentorRole}>{cohort.mentor.role}</div>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* Schedule */}
+                        <section className={styles.modalSection}>
+                            <div className={styles.sectionLabel}>DEPLOYMENT SCHEDULE</div>
+                            <div className={styles.scheduleGrid}>
+                                <div className={styles.scheduleItem}>
+                                    <span className={styles.scheduleKey}>START DATE</span>
+                                    <span className={styles.scheduleVal}>{cohort.schedule.start}</span>
+                                </div>
+                                <div className={styles.scheduleItem}>
+                                    <span className={styles.scheduleKey}>END DATE</span>
+                                    <span className={styles.scheduleVal}>{cohort.schedule.end}</span>
+                                </div>
+                                <div className={styles.scheduleItem}>
+                                    <span className={styles.scheduleKey}>CADENCE</span>
+                                    <span className={styles.scheduleVal}>{cohort.schedule.cadence}</span>
+                                </div>
+                                <div className={styles.scheduleItem}>
+                                    <span className={styles.scheduleKey}>TIME SLOT</span>
+                                    <span className={styles.scheduleVal}>{cohort.schedule.time}</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* Requirements */}
+                        <section className={styles.modalSection}>
+                            <div className={styles.sectionLabel}>PREREQUISITES</div>
+                            <ul className={styles.reqList}>
+                                {cohort.requirements.map((r, i) => (
+                                    <li key={i} className={styles.reqItem}>
+                                        <span style={{ color: cohort.teamColor }}>◈</span> {r}
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                    </div>
+
+                    <div className={styles.modalRight}>
+                        {/* Curriculum */}
+                        <section className={styles.modalSection}>
+                            <div className={styles.sectionLabel}>CURRICULUM</div>
+                            <ol className={styles.curriculumList}>
+                                {cohort.curriculum.map((module, i) => (
+                                    <li key={i} className={styles.curriculumItem} style={{ '--cohort-color': cohort.teamColor } as React.CSSProperties}>
+                                        <span className={styles.curriculumNum} style={{ color: cohort.teamColor }}>
+                                            {String(i + 1).padStart(2, '0')}
+                                        </span>
+                                        <span>{module}</span>
+                                    </li>
+                                ))}
+                            </ol>
+                        </section>
+
+                        {/* Operative Roster */}
+                        <section className={styles.modalSection}>
+                            <div className={styles.sectionLabel}>OPERATIVE ROSTER</div>
+                            <div className={styles.rosterMeta}>
+                                <span><strong style={{ color: cohort.teamColor }}>{cohort.operatives.total}</strong> / {cohort.operatives.slots} slots filled</span>
+                                <span style={{ color: slotsFree > 0 ? '#4caf50' : '#e05252' }}>{slotsFree > 0 ? `${slotsFree} slots remaining` : 'FULL'}</span>
+                            </div>
+                            <div className={styles.progressBarBg} style={{ marginBottom: '1rem' }}>
+                                <div className={styles.progressBarFill} style={{ width: `${fillPct}%`, background: cohort.teamColor }} />
+                            </div>
+                            <div className={styles.rosterList}>
+                                {cohort.operatives.members.map((m, i) => (
+                                    <div key={i} className={styles.rosterRow}>
+                                        <span className={styles.rosterName}>{m.name}</span>
+                                        <span className={styles.rosterRank} style={{ color: cohort.teamColor }}>{m.rank}</span>
+                                    </div>
+                                ))}
+                                {cohort.operatives.total > cohort.operatives.members.length && (
+                                    <div className={styles.rosterMore}>
+                                        +{cohort.operatives.total - cohort.operatives.members.length} more operatives
+                                    </div>
+                                )}
+                            </div>
+                        </section>
+
+                        {/* Enrol CTA */}
+                        <section className={styles.enrolPanel}>
+                            {enrolled ? (
+                                <div className={styles.enrolSuccess} style={{ borderColor: cohort.teamColor }}>
+                                    <div className={styles.enrolSuccessIcon} style={{ color: cohort.teamColor }}>✓</div>
+                                    <div>
+                                        <div className={styles.enrolSuccessTitle}>ENROLMENT_CONFIRMED</div>
+                                        <div className={styles.enrolSuccessSub}>Welcome to {cohort.name}. Reporting instructions will be dispatched to your registered comms.</div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <label className={styles.ackLabel}>
+                                        <input type="checkbox" checked={acknowledged} onChange={onAcknowledge} className={styles.ackCheckbox} />
+                                        <span>I acknowledge the prerequisites and commit to the {cohort.schedule.cadence.toLowerCase()} schedule.</span>
+                                    </label>
+                                    <button
+                                        className={styles.enrolBtn}
+                                        style={{
+                                            background: acknowledged ? cohort.teamColor : 'transparent',
+                                            borderColor: cohort.teamColor,
+                                            color: acknowledged ? '#000' : cohort.teamColor,
+                                            opacity: acknowledged ? 1 : 0.5,
+                                            cursor: acknowledged ? 'pointer' : 'not-allowed'
+                                        }}
+                                        onClick={onConfirm}
+                                        disabled={!acknowledged}
+                                    >
+                                        CONFIRM_ENROLMENT →
+                                    </button>
+                                </>
+                            )}
+                        </section>
+                    </div>
+                </div>
+            </motion.div>
+        </motion.div>
+    );
+}
+
 function RedTeamIcon() {
     return (
         <svg width="120" height="120" viewBox="0 0 120 120" fill="none" style={{ opacity: 0.6 }}>

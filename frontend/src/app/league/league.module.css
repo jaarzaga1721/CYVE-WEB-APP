@@ -740,4 +740,112 @@
     .cardWrapper {
         padding: 0 5px;
     }
-}
+}
+/* --- Cohort Detail Modal --------------------------------------------------- */
+.cohortModalBackdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.cohortModal {
+    width: 100%;
+    max-width: 1000px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #060606;
+    border: 1px solid var(--cohort-color, #f5a623);
+    border-top: 4px solid var(--cohort-color, #f5a623);
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 0 60px rgba(0,0,0,0.9), 0 0 30px rgba(245,166,35,0.08);
+    scrollbar-width: thin;
+}
+
+.modalScanline {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 12%;
+    background: linear-gradient(to bottom, transparent, rgba(245,166,35,0.2), transparent);
+    opacity: 0.07;
+    pointer-events: none;
+    animation: scanline 5s linear infinite;
+    z-index: 0;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.75rem 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    position: sticky;
+    top: 0;
+    background: #060606;
+    z-index: 10;
+}
+.modalHeaderLeft { display: flex; flex-direction: column; gap: 0.4rem; }
+.modalBatch { font-size: 0.65rem; color: rgba(255,255,255,0.4); letter-spacing: 4px; text-transform: uppercase; }
+.modalTitle { font-size: 2rem; font-weight: 900; letter-spacing: 3px; margin: 0; text-transform: uppercase; }
+.modalStatusBadge { display: inline-block; font-size: 0.6rem; font-weight: 900; letter-spacing: 3px; padding: 3px 10px; border-radius: 4px; text-transform: uppercase; }
+.modalClose { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); width: 36px; height: 36px; border-radius: 4px; cursor: pointer; font-size: 1rem; transition: all 0.2s; flex-shrink: 0; }
+.modalClose:hover { border-color: var(--cohort-color, #f5a623); color: var(--cohort-color, #f5a623); }
+
+.modalBody { display: grid; grid-template-columns: 1fr 1fr; }
+.modalLeft { border-right: 1px solid rgba(255,255,255,0.05); padding: 2rem; display: flex; flex-direction: column; gap: 2rem; }
+.modalRight { padding: 2rem; display: flex; flex-direction: column; gap: 2rem; }
+
+.sectionLabel { font-size: 0.6rem; font-weight: 900; letter-spacing: 4px; color: rgba(255,255,255,0.35); text-transform: uppercase; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem; }
+
+.orgPanel { background: rgba(255,255,255,0.02); border-radius: 6px; padding: 1rem; border: 1px solid rgba(255,255,255,0.05); }
+.orgName { font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; }
+.orgDesc { font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.6; margin: 0 0 0.75rem; }
+.orgMeta { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
+
+.mentorCard { display: flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 1rem; border-radius: 6px; }
+.mentorAvatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 900; flex-shrink: 0; color: #fff; }
+.mentorName { font-size: 0.9rem; font-weight: 700; color: #fff; }
+.mentorRole { font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-top: 0.2rem; }
+
+.scheduleGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.scheduleItem { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.2rem; }
+.scheduleKey { font-size: 0.55rem; color: rgba(255,255,255,0.35); letter-spacing: 2px; text-transform: uppercase; }
+.scheduleVal { font-size: 0.85rem; font-weight: 700; color: #fff; }
+
+.reqList { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.reqItem { font-size: 0.8rem; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 0.6rem 0.75rem; border-radius: 6px; }
+
+.curriculumList { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.curriculumItem { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; font-size: 0.8rem; color: rgba(255,255,255,0.75); transition: border-color 0.2s; }
+.curriculumItem:hover { border-color: var(--cohort-color, #f5a623); color: #fff; }
+.curriculumNum { font-family: 'Courier New', monospace; font-size: 0.75rem; font-weight: 900; flex-shrink: 0; }
+
+.rosterMeta { display: flex; justify-content: space-between; font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-bottom: 0.5rem; }
+.rosterList { display: flex; flex-direction: column; gap: 0.4rem; }
+.rosterRow { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.02); border-radius: 4px; font-size: 0.8rem; }
+.rosterName { color: rgba(255,255,255,0.8); }
+.rosterRank { font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; }
+.rosterMore { font-size: 0.7rem; color: rgba(255,255,255,0.3); text-align: center; padding: 0.4rem; }
+
+.enrolPanel { margin-top: auto; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+.ackLabel { display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.5; cursor: pointer; }
+.ackCheckbox { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; cursor: pointer; }
+.enrolBtn { width: 100%; padding: 0.85rem; border: 1px solid; border-radius: 6px; font-size: 0.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; transition: all 0.3s; }
+
+.enrolSuccess { display: flex; align-items: flex-start; gap: 1rem; border-left: 4px solid; padding: 1rem; background: rgba(0,0,0,0.4); border-radius: 6px; }
+.enrolSuccessIcon { font-size: 1.5rem; font-weight: 900; flex-shrink: 0; }
+.enrolSuccessTitle { font-size: 0.75rem; font-weight: 900; letter-spacing: 3px; margin-bottom: 0.4rem; }
+.enrolSuccessSub { font-size: 0.75rem; color: rgba(255,255,255,0.6); line-height: 1.5; }
+
+@media (max-width: 768px) {
+    .modalBody { grid-template-columns: 1fr; }
+    .modalLeft { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .modalTitle { font-size: 1.3rem; }
+    .scheduleGrid { grid-template-columns: 1fr; }
+}
