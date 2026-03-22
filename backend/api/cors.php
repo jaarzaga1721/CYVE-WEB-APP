@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-ini_set('session.cookie_samesite', 'None');
+ini_set('session.cookie_samesite', 'Lax');
 ini_set('session.cookie_secure', '0');
 ini_set('session.cookie_httponly', '1');
 ini_set('session.gc_maxlifetime', 2592000);

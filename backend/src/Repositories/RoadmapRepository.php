@@ -9,7 +9,7 @@ class RoadmapRepository {
     }
 
     public function getByUserId($userId) {
-        $stmt = $this->conn->prepare("SELECT steps FROM roadmaps WHERE created_by = ? ORDER BY created_at DESC LIMIT 1");
+        $stmt = $this->conn->prepare("SELECT steps FROM roadmaps WHERE user_id = ? ORDER BY created_at DESC LIMIT 1");
         $stmt->bind_param("i", $userId);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -27,7 +27,7 @@ class RoadmapRepository {
     public function save($userId, $title, $stepsArray) {
         $steps_json = json_encode($stepsArray);
         
-        $check_stmt = $this->conn->prepare("SELECT id FROM roadmaps WHERE created_by = ? LIMIT 1");
+        $check_stmt = $this->conn->prepare("SELECT id FROM roadmaps WHERE user_id = ? LIMIT 1");
         $check_stmt->bind_param("i", $userId);
         $check_stmt->execute();
         $check_result = $check_stmt->get_result();
@@ -35,10 +35,10 @@ class RoadmapRepository {
         $check_stmt->close();
 
         if ($exists) {
-            $stmt = $this->conn->prepare("UPDATE roadmaps SET steps = ?, title = ? WHERE created_by = ?");
+            $stmt = $this->conn->prepare("UPDATE roadmaps SET steps = ?, title = ? WHERE user_id = ?");
             $stmt->bind_param("ssi", $steps_json, $title, $userId);
         } else {
-            $stmt = $this->conn->prepare("INSERT INTO roadmaps (steps, title, created_by) VALUES (?, ?, ?)");
+            $stmt = $this->conn->prepare("INSERT INTO roadmaps (steps, title, user_id) VALUES (?, ?, ?)");
             $stmt->bind_param("ssi", $steps_json, $title, $userId);
         }
 

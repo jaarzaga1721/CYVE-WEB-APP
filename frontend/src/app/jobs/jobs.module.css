@@ -288,3 +288,457 @@
     .jobTop { flex-direction: column; }
     .jobMeta { align-items: flex-start; }
 }
+
+/* Biometric HUD */
+.biometricHUD {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem 0;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.scanTarget {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reticle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid;
+    border-radius: 10px;
+    opacity: 0.3;
+}
+
+.scanLine {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30%;
+    z-index: 2;
+    animation: sweep 2s linear infinite;
+    background: linear-gradient(to bottom, transparent, var(--team-color));
+}
+
+@keyframes sweep {
+    0% { top: 0; }
+    50% { top: 70%; }
+    100% { top: 0; }
+}
+
+.fingerprint {
+    width: 80px;
+    height: 80px;
+    opacity: 0.6;
+}
+
+.hudMeta {
+    text-align: center;
+}
+
+.hudTitle {
+    font-size: 0.8rem;
+    color: #fff;
+    letter-spacing: 3px;
+    margin-bottom: 0.5rem;
+    font-weight: 900;
+}
+
+.hudStatus {
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+    color: var(--team-color);
+    margin-bottom: 1rem;
+}
+
+.hudLog {
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    color: var(--color-text-muted);
+    text-align: left;
+    min-height: 50px;
+}
+
+/* Signature Pad */
+.signaturePad {
+    padding: 1rem 0;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.padTitle {
+    font-size: 0.7rem;
+    color: var(--color-gold);
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.canvasArea {
+    height: 120px;
+    background: rgba(0,0,0,0.4);
+    border: 1px dashed rgba(255,255,255,0.1);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.signatureGuide {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    color: rgba(255,255,255,0.05);
+    font-family: 'Dancing Script', cursive; /* Assuming a script font is available or fallback */
+    letter-spacing: 5px;
+    pointer-events: none;
+}
+
+.autoSignature {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+
+.signatureStroke {
+    animation: drawSignature 2s ease-in-out forwards;
+}
+
+@keyframes drawSignature {
+    to { stroke-dashoffset: 0; }
+}
+
+.padFooter {
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    margin-top: 1rem;
+    font-family: 'Courier New', monospace;
+}
+
+/* Verified State */
+.verifiedState {
+    text-align: center;
+    padding: 3rem 0;
+    animation: zoomIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.checkSeal {
+    width: 80px;
+    height: 80px;
+    border: 3px solid;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 0 30px currentColor;
+}
+
+.verifiedState h3 {
+    font-size: 1.5rem;
+    letter-spacing: 5px;
+    margin-bottom: 0.5rem;
+}
+
+.verifiedState p {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.timestamp {
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.2);
+    font-family: 'Courier New', monospace;
+}
+/* Modal */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 2rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modalContent {
+    background: rgba(14, 14, 14, 0.98);
+    border: 1px solid var(--team-color, var(--color-border));
+    width: 100%;
+    max-width: 650px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5), 0 0 20px var(--team-color, transparent);
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.modalHeader {
+    padding: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.02), transparent);
+}
+
+.briefingId {
+    display: block;
+    font-size: 0.6rem;
+    color: var(--color-text-muted);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+}
+
+.modalHeader h2 {
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin: 0 0 0.5rem;
+}
+
+.modalHeader p {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+.closeBtn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+    line-height: 1;
+}
+
+.closeBtn:hover { opacity: 1; }
+
+.modalBody {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.modalBody h3 {
+    font-size: 0.7rem;
+    color: var(--color-gold);
+    letter-spacing: 2px;
+    margin: 0 0 1rem;
+    font-family: 'Courier New', monospace;
+}
+
+.sectionIcon { margin-right: 0.5rem; opacity: 0.7; }
+
+.missionBrief p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.requirementsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+}
+
+.reqItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.reqDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    box-shadow: 0 0 10px currentColor;
+}
+
+.complianceBox {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkboxLabel input { display: none; }
+
+.customCheck {
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    position: relative;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+.checkboxLabel input:checked + .customCheck {
+    background: var(--team-color);
+    border-color: var(--team-color);
+}
+
+.checkboxLabel input:checked + .customCheck::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #000;
+    font-weight: 900;
+    font-size: 0.7rem;
+}
+
+.modalFooter {
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.salaryInfo span { display: block; font-size: 0.6rem; color: var(--color-text-muted); letter-spacing: 1px; }
+.salaryInfo h4 { font-size: 1.25rem; font-weight: 900; margin: 0; letter-spacing: 1px; }
+
+.signBtn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.4);
+    padding: 0.75rem 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 900;
+    border-radius: 4px;
+    cursor: not-allowed;
+    transition: all 0.3s;
+    letter-spacing: 2px;
+}
+
+.signActive {
+    border-color: var(--team-color);
+    color: var(--team-color);
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(var(--team-color-rgb), 0.2);
+}
+
+.signActive:hover {
+    background: var(--team-color);
+    color: #000;
+}
+
+/* Decrypt Overlay */
+.decryptOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.decryptBox {
+    width: 400px;
+    text-align: center;
+    position: relative;
+    padding: 2rem;
+    border: 1px solid var(--color-gold);
+    background: rgba(245, 166, 35, 0.05);
+}
+
+.scanline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--color-gold);
+    opacity: 0.3;
+    animation: scan 2s linear infinite;
+}
+
+@keyframes scan { from { top: 0; } to { top: 100%; } }
+
+.decryptText {
+    font-family: 'Courier New', monospace;
+    color: var(--color-gold);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    letter-spacing: 2px;
+}
+
+.decryptProgress {
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.progressBar {
+    height: 100%;
+    background: var(--color-gold);
+    width: 0%;
+    animation: progress 1.2s ease-in-out forwards;
+}
+
+@keyframes progress { to { width: 100%; } }
+
+.nodeStatus {
+    font-size: 0.6rem;
+    color: var(--color-text-muted);
+    font-family: 'Courier New', monospace;
+}

@@ -28,11 +28,10 @@ $user_id = (int) $_SESSION['user_id'];
 // Incoming requests (user is receiver)
 $in_stmt = $conn->prepare("
     SELECT ol.id AS link_id, ol.created_at,
-           u.id, u.display_name, u.name,
-           pr.team, pr.rank, pr.skills, pr.progress_percent
+           u.id, u.display_name, u.username as name,
+           u.profile_data
     FROM operative_links ol
     JOIN users u ON u.id = ol.requester_id
-    LEFT JOIN profile_data pr ON pr.user_id = u.id
     WHERE ol.receiver_id = ? AND ol.status = 'pending'
     ORDER BY ol.created_at DESC
 ");
@@ -43,15 +42,15 @@ $in_stmt->close();
 
 $incoming = [];
 while ($row = $in_result->fetch_assoc()) {
-    $skills_raw = json_decode($row['skills'] ?? '[]', true);
+    $profile = json_decode($row['profile_data'] ?? '{}', true);
     $incoming[] = [
         'link_id'          => (int) $row['link_id'],
         'id'               => (int) $row['id'],
         'display_name'     => $row['display_name'] ?? $row['name'] ?? 'OPERATIVE',
-        'team'             => $row['team'] ?? null,
-        'rank'             => $row['rank'] ?? 'RECRUIT',
-        'skills'           => is_array($skills_raw) ? array_slice($skills_raw, 0, 3) : [],
-        'progress_percent' => (int) ($row['progress_percent'] ?? 0),
+        'team'             => $profile['team'] ?? null,
+        'rank'             => $profile['rank'] ?? 'RECRUIT',
+        'skills'           => is_array($profile['skills'] ?? null) ? array_slice($profile['skills'], 0, 3) : [],
+        'progress_percent' => (int) ($profile['progress_percent'] ?? 0),
         'link_status'      => 'pending_incoming',
         'created_at'       => $row['created_at'],
     ];
@@ -60,11 +59,10 @@ while ($row = $in_result->fetch_assoc()) {
 // Outgoing requests (user is requester)
 $out_stmt = $conn->prepare("
     SELECT ol.id AS link_id, ol.created_at,
-           u.id, u.display_name, u.name,
-           pr.team, pr.rank, pr.skills, pr.progress_percent
+           u.id, u.display_name, u.username as name,
+           u.profile_data
     FROM operative_links ol
     JOIN users u ON u.id = ol.receiver_id
-    LEFT JOIN profile_data pr ON pr.user_id = u.id
     WHERE ol.requester_id = ? AND ol.status = 'pending'
     ORDER BY ol.created_at DESC
 ");
@@ -75,15 +73,15 @@ $out_stmt->close();
 
 $outgoing = [];
 while ($row = $out_result->fetch_assoc()) {
-    $skills_raw = json_decode($row['skills'] ?? '[]', true);
+    $profile = json_decode($row['profile_data'] ?? '{}', true);
     $outgoing[] = [
         'link_id'          => (int) $row['link_id'],
         'id'               => (int) $row['id'],
         'display_name'     => $row['display_name'] ?? $row['name'] ?? 'OPERATIVE',
-        'team'             => $row['team'] ?? null,
-        'rank'             => $row['rank'] ?? 'RECRUIT',
-        'skills'           => is_array($skills_raw) ? array_slice($skills_raw, 0, 3) : [],
-        'progress_percent' => (int) ($row['progress_percent'] ?? 0),
+        'team'             => $profile['team'] ?? null,
+        'rank'             => $profile['rank'] ?? 'RECRUIT',
+        'skills'           => is_array($profile['skills'] ?? null) ? array_slice($profile['skills'], 0, 3) : [],
+        'progress_percent' => (int) ($profile['progress_percent'] ?? 0),
         'link_status'      => 'pending_outgoing',
         'created_at'       => $row['created_at'],
     ];

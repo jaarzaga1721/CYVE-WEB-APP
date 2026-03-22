@@ -17,11 +17,11 @@ npm install
 npm run dev
 
 # 4. Start backend server (In a NEW terminal)
-# From the project root (CYVE-WEB-APP)
-php -S localhost:8000
+# From the project root (CYVE)
+php -S 127.0.0.1:8000
 
 # 5. Open in browser
-# Visit: http://localhost:3000
+# Visit: http://127.0.0.1:3000
 ```
 
 ### Option 2: Run Static Landing Page
@@ -67,13 +67,13 @@ npm install
 npm run dev
 ```
 
-The application will start on http://localhost:3001
+The application will start on http://127.0.0.1:3000
 
 ## 🎯 First Time Setup
 
 ### Create Your First Account
 
-1. Open http://localhost:3001
+1. Open http://127.0.0.1:3000
 2. Click "Sign Up" button
 3. Fill in:
    - Full Name: Your name
@@ -162,7 +162,7 @@ ipconfig
 ifconfig
 
 # Access from mobile device:
-# http://YOUR_IP:3001
+# http://YOUR_IP:3000
 ```
 
 ## 🔄 Update to Latest Version

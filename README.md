@@ -79,7 +79,7 @@ CYVE/
    ```
 
 4. **Open the application**
-   - Next.js App: http://localhost:3001
+   - Next.js App: http://127.0.0.1:3000
    - Static Landing Page: Open `index.html` in your browser
 
 ## 🎯 Usage
@@ -90,7 +90,7 @@ CYVE/
 - Click "Log In" or "Sign Up" to access the full application
 
 ### Next.js Application
-- Navigate to http://localhost:3001
+- Navigate to http://127.0.0.1:3000
 - Create an account (stored in browser localStorage)
 - Explore roadmaps, calendar, and team information
 - All data persists in your browser

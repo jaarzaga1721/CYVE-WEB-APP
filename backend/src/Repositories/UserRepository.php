@@ -147,7 +147,7 @@ class UserRepository
                 r.steps as roadmap_steps,
                 (SELECT COUNT(*) FROM events e WHERE e.created_by = u.id AND e.status = 'approved') as event_count
             FROM users u
-            LEFT JOIN roadmaps r ON r.created_by = u.id
+            LEFT JOIN roadmaps r ON r.user_id = u.id
             WHERE u.role != 'admin'
         ";
 

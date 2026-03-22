@@ -32,13 +32,9 @@ $stmt = $conn->prepare("
         ol.id AS link_id,
         u.id,
         u.display_name,
-        u.name,
+        u.username as name,
         u.email,
-        pr.team,
-        pr.rank,
-        pr.skills,
-        pr.progress_percent,
-        pr.xp,
+        u.profile_data,
         op.dossier_visibility,
         op.show_skills,
         op.show_progress,
@@ -48,7 +44,6 @@ $stmt = $conn->prepare("
         CASE WHEN ol.requester_id = ? THEN u.id = ol.receiver_id
              ELSE u.id = ol.requester_id END
     )
-    LEFT JOIN profile_data pr ON pr.user_id = u.id
     LEFT JOIN operative_privacy op ON op.user_id = u.id
     WHERE (ol.requester_id = ? OR ol.receiver_id = ?)
       AND ol.status = 'active'
@@ -61,21 +56,21 @@ $stmt->close();
 
 $allies = [];
 while ($row = $result->fetch_assoc()) {
+    $profile = json_decode($row['profile_data'] ?? '{}', true);
     $visibility = $row['dossier_visibility'] ?? 'public';
     $skills = [];
-    if ($row['show_skills'] && $row['skills']) {
-        $decoded = json_decode($row['skills'], true);
-        $skills = is_array($decoded) ? array_slice($decoded, 0, 3) : [];
+    if ($row['show_skills'] && ($profile['skills'] ?? null)) {
+        $skills = is_array($profile['skills']) ? array_slice($profile['skills'], 0, 3) : [];
     }
     $allies[] = [
         'link_id'          => (int) $row['link_id'],
         'id'               => (int) $row['id'],
         'display_name'     => $row['display_name'] ?? $row['name'] ?? 'OPERATIVE',
-        'team'             => $row['team'] ?? null,
-        'rank'             => $row['show_rank'] ? ($row['rank'] ?? 'RECRUIT') : null,
+        'team'             => $profile['team'] ?? null,
+        'rank'             => $row['show_rank'] ? ($profile['rank'] ?? 'RECRUIT') : null,
         'skills'           => $skills,
-        'progress_percent' => $row['show_progress'] ? (int) ($row['progress_percent'] ?? 0) : null,
-        'xp'               => (int) ($row['xp'] ?? 0),
+        'progress_percent' => $row['show_progress'] ? (int) ($profile['progress_percent'] ?? 0) : null,
+        'xp'               => (int) ($profile['xp'] ?? 0),
         'link_status'      => 'active',
         'dossier_visibility' => $visibility,
         'shared_allies'    => get_shared_allies_count($conn, $user_id, (int)$row['id']),
