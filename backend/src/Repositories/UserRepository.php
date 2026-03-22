@@ -107,7 +107,7 @@ class UserRepository
         $success = $stmt->execute();
         $stmt->close();
         if ($success) {
-            log_activity($userId, 'profile_updated', "Security alert: Access key credentials successfully reset.");
+            \log_activity($userId, 'profile_updated', "Security alert: Access key credentials successfully reset.");
         }
         return $success;
     }
@@ -131,7 +131,7 @@ class UserRepository
         $insertId = $this->conn->insert_id;
         $stmt->close();
         if ($success) {
-            log_activity($insertId, 'signup', "New operative profile established: $username. Welcome to CYVE.");
+            \log_activity($insertId, 'signup', "New operative profile established: $username. Welcome to CYVE.");
         }
         return $success ? $insertId : false;
     }

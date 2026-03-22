@@ -28,7 +28,7 @@ class EventRepository {
         $insertId = $this->conn->insert_id;
         $stmt->close();
         if ($success) {
-            log_activity($userId, 'mission_created', "Deployed new mission: $title");
+            \log_activity($userId, 'mission_created', "Deployed new mission: $title");
         }
         return $success ? $insertId : false;
     }
@@ -39,7 +39,7 @@ class EventRepository {
         $success = $stmt->execute();
         $stmt->close();
         if ($success) {
-            log_activity($userId, 'mission_deleted', "Soft-deleted mission archive ID: $eventId");
+            \log_activity($userId, 'mission_deleted', "Soft-deleted mission archive ID: $eventId");
         }
         return $success;
     }
@@ -50,7 +50,7 @@ class EventRepository {
         $success = $stmt->execute();
         $stmt->close();
         if ($success) {
-            log_activity($userId, 'mission_restored', "Restored mission archive ID: $eventId");
+            \log_activity($userId, 'mission_restored', "Restored mission archive ID: $eventId");
         }
         return $success;
     }
