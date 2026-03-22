@@ -10,6 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once 'middleware.php';
+require_once __DIR__ . '/../src/Repositories/RoadmapRepository.php';
 
 use CYVE\Repositories\RoadmapRepository;
 

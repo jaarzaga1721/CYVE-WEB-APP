@@ -102,6 +102,8 @@ export default function LabsPage() {
 function LabsContent() {
     const [filter, setFilter] = useState<'all' | 'red' | 'blue' | 'purple'>('all');
     const [activelab, setActiveLab] = useState<string | null>(null);
+    const [isInitializing, setIsInitializing] = useState(false);
+    const [initStage, setInitStage] = useState(0);
 
     const filtered = filter === 'all' ? LABS : LABS.filter(l => l.team === filter);
     const activeLab = LABS.find(l => l.id === activelab);
@@ -172,7 +174,23 @@ function LabsContent() {
                                             </li>
                                         ))}
                                     </ul>
-                                    <button className={styles.startBtn} style={{ borderColor: TEAM_COLORS[lab.team], color: TEAM_COLORS[lab.team] }}>
+                                    <button 
+                                        className={styles.startBtn} 
+                                        style={{ borderColor: TEAM_COLORS[lab.team], color: TEAM_COLORS[lab.team] }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setIsInitializing(true);
+                                            // Simulated multi-stage init
+                                            setTimeout(() => setInitStage(1), 800);
+                                            setTimeout(() => setInitStage(2), 1600);
+                                            setTimeout(() => setInitStage(3), 2400);
+                                            setTimeout(() => {
+                                                setIsInitializing(false);
+                                                setInitStage(0);
+                                                alert(`ENVIRONMENT_READY: Uplink established to ${lab.title}. Virtual terminal is active.`);
+                                            }, 3200);
+                                        }}
+                                    >
                                         DEPLOY_LAB →
                                     </button>
                                 </div>
@@ -181,6 +199,38 @@ function LabsContent() {
                     ))}
                 </div>
             </div>
+
+            {/* Lab Initialization Overlay */}
+            {isInitializing && (
+                <div className={styles.initOverlay}>
+                    <div className={styles.initBox} style={{ '--team-color': TEAM_COLORS[activeLab?.team || 'red'] } as React.CSSProperties}>
+                        <div className={styles.scanline} />
+                        <div className={styles.initTitle}>INITIALIZING_ENVIRONMENT</div>
+                        <div className={styles.initDossier}>{activeLab?.title} // SECTOR_IDENTIFIED</div>
+                        
+                        <div className={styles.initStages}>
+                            <div className={`${styles.stage} ${initStage >= 1 ? styles.stageActive : ''}`}>
+                                [01] PROVISIONING_VIRTUAL_NODE... {initStage >= 1 ? 'DONE' : '...'}
+                            </div>
+                            <div className={`${styles.stage} ${initStage >= 2 ? styles.stageActive : ''}`}>
+                                [02] SYNCING_TOOLSET_REPOSITORY... {initStage >= 2 ? 'DONE' : '...'}
+                            </div>
+                            <div className={`${styles.stage} ${initStage >= 3 ? styles.stageActive : ''}`}>
+                                [03] ESTABLISHING_SECURE_TTY... {initStage >= 3 ? 'READY' : '...'}
+                            </div>
+                        </div>
+
+                        <div className={styles.terminalPreview}>
+                            <div className={styles.termHeader}>TTY_0x82a / root@cyve-lab</div>
+                            <div className={styles.termBody}>
+                                {initStage >= 1 && <div className={styles.termLine}>&gt; nmap -sV -O stealth_module_01...</div>}
+                                {initStage >= 2 && <div className={styles.termLine}>&gt; services identify results... 100%</div>}
+                                {initStage >= 3 && <div className={styles.termLine}>&gt; access_granted: node_online</div>}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
