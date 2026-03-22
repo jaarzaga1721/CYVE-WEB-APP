@@ -206,6 +206,93 @@ const COHORTS: CohortData[] = [
     }
 ];
 
+interface CtfData {
+    id: string;
+    name: string;
+    difficulty: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+    accentColor: string;
+    shortDesc: string;
+    fullDesc: string;
+    dates: string;
+    registrationDeadline: string;
+    platform: string;
+    website: string;
+    format: string;
+    teamSize: string;
+    categories: string[];
+    prizes: string[];
+    eligibility: string;
+    existingTeams: { name: string; members: number; slots: number }[];
+}
+
+const CTF_OPERATIONS: CtfData[] = [
+    {
+        id: 'htb-cyber-apocalypse',
+        name: 'HackTheBox: Cyber Apocalypse',
+        difficulty: 'ADVANCED',
+        accentColor: '#e53935',
+        shortDesc: 'Global CTF competition spanning 5 days focusing on Web, Crypto, Pwn, and Forensics.',
+        fullDesc: 'Cyber Apocalypse is HackTheBox\'s flagship annual CTF. Teams compete across hundreds of challenges spanning Web Exploitation, Binary Exploitation (Pwn), Cryptography, Forensics, Reversing, and more. The event draws thousands of teams globally, making it one of the most prestigious CTF competitions in the world.',
+        dates: 'May 10 - May 15, 2026',
+        registrationDeadline: 'May 9, 2026',
+        platform: 'HackTheBox',
+        website: 'https://ctf.hackthebox.com',
+        format: 'Online (Jeopardy-style)',
+        teamSize: '1 – 10 members',
+        categories: ['Web Exploitation', 'Binary Exploitation', 'Cryptography', 'Forensics', 'Reversing', 'Misc'],
+        prizes: ['$5,000 USD (1st)', '$2,500 USD (2nd)', '$1,000 USD (3rd)', 'HackTheBox Pro subscriptions', 'Exclusive merchandise'],
+        eligibility: 'Open to all. Individual and team participation allowed.',
+        existingTeams: [
+            { name: 'CYVE_Alpha', members: 6, slots: 4 },
+            { name: 'PH_Offensive', members: 8, slots: 2 },
+            { name: 'Binary_Wolves', members: 3, slots: 7 },
+        ]
+    },
+    {
+        id: 'rootcon-2026',
+        name: 'Rootcon 2026 Qualifications',
+        difficulty: 'INTERMEDIATE',
+        accentColor: '#f5a623',
+        shortDesc: 'The official qualifier round for the Philippines\' premier hacker conference.',
+        fullDesc: 'ROOTCON is the Philippines\' premier hacker conference CTF, drawing the nation\'s top security professionals and students. The qualification round is conducted online and the top teams advance to the on-site finals held in Cebu City during the ROOTCON conference. Challenges focus on real-world Philippine enterprise environments.',
+        dates: 'July 24 - July 26, 2026',
+        registrationDeadline: 'July 20, 2026',
+        platform: 'Online (PH)',
+        website: 'https://www.rootcon.org',
+        format: 'Online Quals → On-site Finals (Cebu)',
+        teamSize: '1 – 5 members',
+        categories: ['Web Security', 'Network Forensics', 'Reverse Engineering', 'Social Engineering', 'OSINT'],
+        prizes: ['₱50,000 (Finals 1st)', '₱25,000 (Finals 2nd)', 'ROOTCON Conference access', 'Certification vouchers'],
+        eligibility: 'Philippines-based teams only for on-site finals. Online quals open to all.',
+        existingTeams: [
+            { name: 'CYVE_PH_01', members: 3, slots: 2 },
+            { name: 'Luzon_Sec', members: 4, slots: 1 },
+        ]
+    },
+    {
+        id: 'picoctf-2026',
+        name: 'PicoCTF 2026',
+        difficulty: 'BEGINNER',
+        accentColor: '#4caf50',
+        shortDesc: 'A free computer security education program with original content built on a CTF framework.',
+        fullDesc: 'PicoCTF is a free cybersecurity program designed by Carnegie Mellon University (CMU) for beginners to intermediate players. The platform offers a wide range of progressively difficult challenges to help competitors build foundational skills in all areas of cybersecurity. It\'s the perfect entry point for operatives new to competitive security.',
+        dates: 'Sept 01 - Sept 14, 2026',
+        registrationDeadline: 'Aug 31, 2026',
+        platform: 'CMU / picoCTF.org',
+        website: 'https://picoctf.org',
+        format: 'Online (Jeopardy-style)',
+        teamSize: '1 – 5 members',
+        categories: ['General Skills', 'Cryptography', 'Web Exploitation', 'Forensics', 'Reversing', 'Binary Exploitation'],
+        prizes: ['Certificates of achievement', 'CMU recognition', 'Scholarship consideration for top PH teams'],
+        eligibility: 'Open to all. Recommended for students and those new to CTF competitions.',
+        existingTeams: [
+            { name: 'CYVE_Rookies', members: 2, slots: 3 },
+            { name: 'PH_Beginners', members: 1, slots: 4 },
+            { name: 'NextGen_Ops', members: 4, slots: 1 },
+        ]
+    }
+];
+
 export default function LeaguePage() {
     const [currentIndex, setCurrentIndex] = useState(1); // Start with Purple in center
     const { profile, updateProfile } = useProfile();
@@ -218,6 +305,9 @@ export default function LeaguePage() {
     const [selectedCohort, setSelectedCohort] = useState<CohortData | null>(null);
     const [enrolled, setEnrolled] = useState(false);
     const [acknowledged, setAcknowledged] = useState(false);
+    const [selectedCtf, setSelectedCtf] = useState<CtfData | null>(null);
+    const [ctfMode, setCtfMode] = useState<'form' | 'join' | null>(null);
+    const [teamName, setTeamName] = useState('');
 
     const minSwipeDistance = 50;
 
@@ -232,6 +322,12 @@ export default function LeaguePage() {
         };
         fetchLeaderboard();
     }, [callApi]);
+
+    const handleCtfAction = useCallback((ctf: CtfData, mode: 'form' | 'join') => {
+        setTeamName('');
+        setCtfMode(mode);
+        setSelectedCtf(ctf);
+    }, []);
 
     const handleJoinUnit = useCallback((cohort: CohortData) => {
         setEnrolled(false);
@@ -470,53 +566,25 @@ export default function LeaguePage() {
                 <div className={styles.operationBoardSection}>
                     <h2 className={styles.sectionHeading}>OPERATION BOARD</h2>
                     <div className={styles.ctfGrid}>
-                        <div className={styles.ctfCard}>
-                            <div className={styles.ctfHeader}>
-                                <h3>HackTheBox: Cyber Apocalypse</h3>
-                                <div className={styles.ctfDifficulty} style={{ backgroundColor: 'rgba(229,57,53,0.15)', color: '#e53935', borderColor: '#e53935' }}>ADVANCED</div>
+                        {CTF_OPERATIONS.map((ctf) => (
+                            <div key={ctf.id} className={styles.ctfCard}
+                                style={{ borderLeftColor: ctf.accentColor }}
+                            >
+                                <div className={styles.ctfHeader}>
+                                    <h3>{ctf.name}</h3>
+                                    <div className={styles.ctfDifficulty} style={{ backgroundColor: `${ctf.accentColor}22`, color: ctf.accentColor, borderColor: ctf.accentColor }}>{ctf.difficulty}</div>
+                                </div>
+                                <p className={styles.ctfDetails}>{ctf.shortDesc}</p>
+                                <div className={styles.ctfMeta}>
+                                    <span>📅 {ctf.dates}</span>
+                                    <span>🌐 {ctf.platform}</span>
+                                </div>
+                                <div className={styles.ctfActions}>
+                                    <button className={styles.btnPrimary} style={{ background: ctf.accentColor, color: '#000' }} onClick={() => handleCtfAction(ctf, 'form')}>FORM TEAM</button>
+                                    <button className={styles.btnSecondary} style={{ borderColor: ctf.accentColor, color: ctf.accentColor }} onClick={() => handleCtfAction(ctf, 'join')}>JOIN EXISTING TEAM</button>
+                                </div>
                             </div>
-                            <p className={styles.ctfDetails}>Global CTF competition spanning 5 days focusing on Web, Crypto, Pwn, and Forensics.</p>
-                            <div className={styles.ctfMeta}>
-                                <span>📅 May 10 - May 15, 2026</span>
-                                <span>🌐 HackTheBox</span>
-                            </div>
-                            <div className={styles.ctfActions}>
-                                <button className={styles.btnPrimary}>FORM TEAM</button>
-                                <button className={styles.btnSecondary}>JOIN EXISTING TEAM</button>
-                            </div>
-                        </div>
-
-                        <div className={styles.ctfCard}>
-                            <div className={styles.ctfHeader}>
-                                <h3>Rootcon 2026 Qualifications</h3>
-                                <div className={styles.ctfDifficulty} style={{ backgroundColor: 'rgba(245,166,35,0.15)', color: '#f5a623', borderColor: '#f5a623' }}>INTERMEDIATE</div>
-                            </div>
-                            <p className={styles.ctfDetails}>The official qualifier round for the Philippines' premier hacker conference.</p>
-                            <div className={styles.ctfMeta}>
-                                <span>📅 July 24 - July 26, 2026</span>
-                                <span>🌐 Online (PH)</span>
-                            </div>
-                            <div className={styles.ctfActions}>
-                                <button className={styles.btnPrimary}>FORM TEAM</button>
-                                <button className={styles.btnSecondary}>JOIN EXISTING TEAM</button>
-                            </div>
-                        </div>
-
-                        <div className={styles.ctfCard}>
-                            <div className={styles.ctfHeader}>
-                                <h3>PicoCTF 2026</h3>
-                                <div className={styles.ctfDifficulty} style={{ backgroundColor: 'rgba(76,175,80,0.15)', color: '#4caf50', borderColor: '#4caf50' }}>BEGINNER</div>
-                            </div>
-                            <p className={styles.ctfDetails}>A free computer security education program with original content built on a CTF framework.</p>
-                            <div className={styles.ctfMeta}>
-                                <span>📅 Sept 01 - Sept 14, 2026</span>
-                                <span>🌐 CMU</span>
-                            </div>
-                            <div className={styles.ctfActions}>
-                                <button className={styles.btnPrimary}>FORM TEAM</button>
-                                <button className={styles.btnSecondary}>JOIN EXISTING TEAM</button>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
 
@@ -566,6 +634,15 @@ export default function LeaguePage() {
                         onClose={() => setSelectedCohort(null)}
                     />
                 )}
+                {selectedCtf && ctfMode && (
+                    <CtfDetailModal
+                        ctf={selectedCtf}
+                        mode={ctfMode}
+                        teamName={teamName}
+                        onTeamNameChange={setTeamName}
+                        onClose={() => setSelectedCtf(null)}
+                    />
+                )}
             </AnimatePresence>
         </div>
     );
@@ -573,6 +650,259 @@ export default function LeaguePage() {
 
 // Team Icons - Gold Standard Line Art
 // ─── Cohort Detail Modal ────────────────────────────────────────────────────
+// ─── CTF Detail Modal ──────────────────────────────────────────────────────
+function CtfDetailModal({
+    ctf, mode, teamName, onTeamNameChange, onClose
+}: {
+    ctf: CtfData;
+    mode: 'form' | 'join';
+    teamName: string;
+    onTeamNameChange: (v: string) => void;
+    onClose: () => void;
+}) {
+    const [submitted, setSubmitted] = useState(false);
+    const [activeTab, setActiveTab] = useState<'info' | 'action'>(mode === 'form' ? 'info' : 'action');
+
+    return (
+        <motion.div
+            className={styles.cohortModalBackdrop}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+        >
+            <motion.div
+                className={styles.cohortModal}
+                style={{ '--cohort-color': ctf.accentColor, maxWidth: '900px' } as React.CSSProperties}
+                initial={{ opacity: 0, y: 60, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 60, scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 28 }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className={styles.modalScanline} />
+
+                {/* Header */}
+                <div className={styles.modalHeader}>
+                    <div className={styles.modalHeaderLeft}>
+                        <span className={styles.modalBatch}>{ctf.platform} · {ctf.format}</span>
+                        <h2 className={styles.modalTitle} style={{ color: ctf.accentColor }}>{ctf.name}</h2>
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                            <span className={styles.modalStatusBadge} style={{ background: `${ctf.accentColor}22`, color: ctf.accentColor, border: `1px solid ${ctf.accentColor}` }}>
+                                {ctf.difficulty}
+                            </span>
+                            <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '2px' }}>📅 {ctf.dates}</span>
+                        </div>
+                    </div>
+                    <button className={styles.modalClose} onClick={onClose} aria-label="Close">✕</button>
+                </div>
+
+                {/* Tabs */}
+                <div className={styles.ctfTabs}>
+                    <button
+                        className={`${styles.ctfTab} ${activeTab === 'info' ? styles.ctfTabActive : ''}`}
+                        style={activeTab === 'info' ? { color: ctf.accentColor, borderBottomColor: ctf.accentColor } : {}}
+                        onClick={() => setActiveTab('info')}
+                    >
+                        COMPETITION INFO
+                    </button>
+                    <button
+                        className={`${styles.ctfTab} ${activeTab === 'action' ? styles.ctfTabActive : ''}`}
+                        style={activeTab === 'action' ? { color: ctf.accentColor, borderBottomColor: ctf.accentColor } : {}}
+                        onClick={() => setActiveTab('action')}
+                    >
+                        {mode === 'form' ? 'FORM TEAM' : 'JOIN EXISTING TEAM'}
+                    </button>
+                </div>
+
+                <div className={styles.modalBody} style={{ gridTemplateColumns: activeTab === 'info' ? '1fr 1fr' : '1fr' }}>
+                    {activeTab === 'info' ? (
+                        <>
+                            {/* Left: Overview */}
+                            <div className={styles.modalLeft}>
+                                <section className={styles.modalSection}>
+                                    <div className={styles.sectionLabel}>OVERVIEW</div>
+                                    <div className={styles.orgPanel}>
+                                        <p className={styles.orgDesc} style={{ marginBottom: 0 }}>{ctf.fullDesc}</p>
+                                    </div>
+                                </section>
+
+                                <section className={styles.modalSection}>
+                                    <div className={styles.sectionLabel}>LOGISTICS</div>
+                                    <div className={styles.scheduleGrid}>
+                                        <div className={styles.scheduleItem}>
+                                            <span className={styles.scheduleKey}>DATES</span>
+                                            <span className={styles.scheduleVal}>{ctf.dates}</span>
+                                        </div>
+                                        <div className={styles.scheduleItem}>
+                                            <span className={styles.scheduleKey}>REG. DEADLINE</span>
+                                            <span className={styles.scheduleVal}>{ctf.registrationDeadline}</span>
+                                        </div>
+                                        <div className={styles.scheduleItem}>
+                                            <span className={styles.scheduleKey}>FORMAT</span>
+                                            <span className={styles.scheduleVal}>{ctf.format}</span>
+                                        </div>
+                                        <div className={styles.scheduleItem}>
+                                            <span className={styles.scheduleKey}>TEAM SIZE</span>
+                                            <span className={styles.scheduleVal}>{ctf.teamSize}</span>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <section className={styles.modalSection}>
+                                    <div className={styles.sectionLabel}>ELIGIBILITY</div>
+                                    <div className={styles.orgPanel}>
+                                        <p className={styles.orgDesc} style={{ marginBottom: 0 }}>{ctf.eligibility}</p>
+                                    </div>
+                                </section>
+                            </div>
+
+                            {/* Right: Categories & Prizes */}
+                            <div className={styles.modalRight}>
+                                <section className={styles.modalSection}>
+                                    <div className={styles.sectionLabel}>CHALLENGE CATEGORIES</div>
+                                    <ul className={styles.reqList}>
+                                        {ctf.categories.map((cat, i) => (
+                                            <li key={i} className={styles.reqItem}>
+                                                <span style={{ color: ctf.accentColor }}>◈</span> {cat}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </section>
+
+                                <section className={styles.modalSection}>
+                                    <div className={styles.sectionLabel}>PRIZES & REWARDS</div>
+                                    <ol className={styles.curriculumList}>
+                                        {ctf.prizes.map((prize, i) => (
+                                            <li key={i} className={styles.curriculumItem} style={{ '--cohort-color': ctf.accentColor } as React.CSSProperties}>
+                                                <span className={styles.curriculumNum} style={{ color: ctf.accentColor }}>
+                                                    {String(i + 1).padStart(2, '0')}
+                                                </span>
+                                                <span>{prize}</span>
+                                            </li>
+                                        ))}
+                                    </ol>
+                                </section>
+
+                                <section className={styles.modalSection}>
+                                    <div className={styles.sectionLabel}>EXTERNAL LINK</div>
+                                    <a
+                                        href={ctf.website}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={styles.ctfExternalLink}
+                                        style={{ color: ctf.accentColor, borderColor: ctf.accentColor }}
+                                    >
+                                        🔗 Visit Official Website →
+                                    </a>
+                                </section>
+                            </div>
+                        </>
+                    ) : (
+                        /* Action Panel */
+                        <div className={styles.modalLeft} style={{ borderRight: 'none', maxWidth: '600px', margin: '0 auto', width: '100%' }}>
+                            {submitted ? (
+                                <div className={styles.enrolSuccess} style={{ borderColor: ctf.accentColor, marginTop: '1rem' }}>
+                                    <div className={styles.enrolSuccessIcon} style={{ color: ctf.accentColor }}>✓</div>
+                                    <div>
+                                        <div className={styles.enrolSuccessTitle}>
+                                            {mode === 'form' ? 'TEAM_FORMATION_REQUESTED' : 'JOIN_REQUEST_SUBMITTED'}
+                                        </div>
+                                        <div className={styles.enrolSuccessSub}>
+                                            {mode === 'form'
+                                                ? `Team "${teamName}" has been registered for ${ctf.name}. Confirmation will be sent to your registered comms.`
+                                                : `Your join request has been submitted. The team captain will review and approve your application.`}
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : mode === 'form' ? (
+                                /* FORM TEAM */
+                                <section className={styles.modalSection}>
+                                    <div className={styles.sectionLabel}>CREATE A NEW TEAM</div>
+                                    <div className={styles.orgPanel} style={{ marginBottom: '1rem' }}>
+                                        <p className={styles.orgDesc}>Register a new team for <strong style={{ color: ctf.accentColor }}>{ctf.name}</strong>. As team captain, you can invite other CYVE operatives to join after registration.</p>
+                                    </div>
+                                    <div className={styles.formGroup}>
+                                        <label className={styles.formLabel}>TEAM DESIGNATION</label>
+                                        <input
+                                            type="text"
+                                            className={styles.formInput}
+                                            style={{ borderColor: `${ctf.accentColor}55` }}
+                                            placeholder="e.g. CYVE_Delta_Force"
+                                            value={teamName}
+                                            onChange={(e) => onTeamNameChange(e.target.value)}
+                                            maxLength={30}
+                                        />
+                                        <span className={styles.formHint}>{teamName.length}/30 chars. Alphanumeric and underscores only.</span>
+                                    </div>
+                                    <div className={styles.scheduleGrid} style={{ marginTop: '1rem' }}>
+                                        <div className={styles.scheduleItem}>
+                                            <span className={styles.scheduleKey}>COMPETITION</span>
+                                            <span className={styles.scheduleVal} style={{ fontSize: '0.75rem' }}>{ctf.name}</span>
+                                        </div>
+                                        <div className={styles.scheduleItem}>
+                                            <span className={styles.scheduleKey}>MAX TEAM SIZE</span>
+                                            <span className={styles.scheduleVal}>{ctf.teamSize}</span>
+                                        </div>
+                                    </div>
+                                    <button
+                                        className={styles.enrolBtn}
+                                        style={{
+                                            marginTop: '1.5rem',
+                                            background: teamName.trim() ? ctf.accentColor : 'transparent',
+                                            borderColor: ctf.accentColor,
+                                            color: teamName.trim() ? '#000' : ctf.accentColor,
+                                            opacity: teamName.trim() ? 1 : 0.5,
+                                            cursor: teamName.trim() ? 'pointer' : 'not-allowed'
+                                        }}
+                                        disabled={!teamName.trim()}
+                                        onClick={() => setSubmitted(true)}
+                                    >
+                                        REGISTER TEAM →
+                                    </button>
+                                </section>
+                            ) : (
+                                /* JOIN EXISTING TEAM */
+                                <section className={styles.modalSection}>
+                                    <div className={styles.sectionLabel}>AVAILABLE TEAMS</div>
+                                    <div className={styles.orgPanel} style={{ marginBottom: '1rem' }}>
+                                        <p className={styles.orgDesc}>Select an open team to request membership. The team captain will review your application.</p>
+                                    </div>
+                                    <div className={styles.rosterList}>
+                                        {ctf.existingTeams.map((team, i) => (
+                                            <div key={i} className={styles.ctfTeamRow} style={{ '--cohort-color': ctf.accentColor } as React.CSSProperties}>
+                                                <div>
+                                                    <div className={styles.ctfTeamName}>{team.name}</div>
+                                                    <div className={styles.ctfTeamSlots}>
+                                                        <span style={{ color: ctf.accentColor }}>{team.members}</span>/{team.members + team.slots} members
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div className={styles.progressBarBg} style={{ width: '80px', marginBottom: '0.4rem' }}>
+                                                        <div className={styles.progressBarFill} style={{ width: `${Math.round(team.members / (team.members + team.slots) * 100)}%`, background: ctf.accentColor }} />
+                                                    </div>
+                                                    <button
+                                                        className={styles.ctfJoinTeamBtn}
+                                                        style={{ borderColor: ctf.accentColor, color: ctf.accentColor }}
+                                                        disabled={team.slots === 0}
+                                                        onClick={() => setSubmitted(true)}
+                                                    >
+                                                        {team.slots === 0 ? 'FULL' : 'REQUEST →'}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </motion.div>
+        </motion.div>
+    );
+}
+
 function CohortDetailModal({
     cohort,
     enrolled,
