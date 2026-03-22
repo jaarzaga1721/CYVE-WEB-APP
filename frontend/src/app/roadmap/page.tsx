@@ -48,8 +48,19 @@ function RoadmapContent() {
   const { profile, updateProfile } = useProfile();
   const { steps, selectedField, selectField, toggleStepCompletion, getProgress } = useRoadmap();
   const [isSwitching, setIsSwitching] = useState(false);
+  const [showUplink, setShowUplink] = useState(false);
+  const [lastCompletedTask, setLastCompletedTask] = useState<string | null>(null);
 
   const role: RoleKey | null = isSwitching ? null : (profile.preferredRole ?? selectedField);
+
+  // Uplink effect on role change
+  useEffect(() => {
+    if (role && !isSwitching) {
+        setShowUplink(true);
+        const timer = setTimeout(() => setShowUplink(false), 1500);
+        return () => clearTimeout(timer);
+    }
+  }, [role, isSwitching]);
 
   useEffect(() => {
     if (profile.preferredRole && profile.preferredRole !== selectedField && !isSwitching) {
@@ -61,6 +72,15 @@ function RoadmapContent() {
     updateProfile({ preferredRole: r });
     selectField(r);
     setIsSwitching(false);
+  };
+
+  const handleToggle = (stepId: string, title: string) => {
+    const step = steps.find(s => s.id === stepId);
+    if (step && !step.completed) {
+        setLastCompletedTask(title);
+        setTimeout(() => setLastCompletedTask(null), 3000);
+    }
+    toggleStepCompletion(stepId);
   };
 
   if (role === null) {
@@ -153,11 +173,15 @@ function RoadmapContent() {
         <div className={styles.skillsCertGrid}>
           <div className={styles.skillsCertCard}>
             <h3 className={styles.skillsCertHeading}>Skills you&apos;ll gain</h3>
-            <ul className={styles.skillsList}>
+            <div className={styles.skillsGrid}>
               {ROLE_SKILLS[role].map((skill, i) => (
-                <li key={i}>{skill}</li>
+                <div key={i} className={styles.skillBox}>
+                    <div className={styles.skillIcon}>◈</div>
+                    <div className={styles.skillLabel}>{skill}</div>
+                    <div className={styles.skillBar}><div className={styles.skillFill} style={{ width: '0%', animation: 'fillSkill 1.5s ease-out forwards', animationDelay: `${i * 0.1}s` }} /></div>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
           <div className={styles.skillsCertCard}>
             <h3 className={styles.skillsCertHeading}>Certifications to consider</h3>
@@ -224,15 +248,38 @@ function RoadmapContent() {
                       extra={extra} 
                       isLocked={isLocked}
                       isActive={isActive}
-                      onToggle={() => toggleStepCompletion(step.id)} 
+                      onToggle={() => handleToggle(step.id, step.title)} 
                     />
                   );
                 })}
-
               </div>
             </div>
           ))}
         </div>
+
+        {/* Uplink Overlay */}
+        {showUplink && (
+            <div className={styles.uplinkOverlay}>
+                <div className={styles.uplinkBox}>
+                    <div className={styles.glitchText} data-text="ESTABLISHING_UPLINK">ESTABLISHING_UPLINK</div>
+                    <div className={styles.uplinkSub}>{role.toUpperCase()}_SECTOR // ACCESS_GRANTED</div>
+                    <div className={styles.uplinkSync}>SYNC: 0x{Math.random().toString(16).slice(2, 8).toUpperCase()}</div>
+                </div>
+            </div>
+        )}
+
+        {/* Achievement HUD */}
+        {lastCompletedTask && (
+            <div className={styles.achievementHUD}>
+                <div className={styles.achievementBox}>
+                    <div className={styles.achIcon}>✓</div>
+                    <div className={styles.achMeta}>
+                        <div className={styles.achTitle}>OBJECTIVE_SECURED</div>
+                        <div className={styles.achTask}>{lastCompletedTask}</div>
+                    </div>
+                </div>
+            </div>
+        )}
       </section>
 
       <section className={styles.mapSection}>
