@@ -1,6 +1,12 @@
 <?php
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if (preg_match('/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/', $origin)) {
+$allowed_origins = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    getenv('FRONTEND_URL')
+];
+
+if (in_array($origin, $allowed_origins) || preg_match('/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/', $origin)) {
     header("Access-Control-Allow-Origin: $origin");
 }
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
