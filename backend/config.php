@@ -26,8 +26,18 @@ define('DB_PASS', $_ENV['DB_PASS'] ?? getenv('DB_PASS') ?? '');
 define('DB_NAME', $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?? 'cyve');
 
 // 3. Create connection
+$db_port = intval($_ENV['DB_PORT'] ?? getenv('DB_PORT') ?? 3306);
+$mysql_ssl = $_ENV['MYSQL_SSL'] ?? getenv('MYSQL_SSL') ?? 'false';
+
 try {
-    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $conn = new mysqli();
+    
+    if ($mysql_ssl === 'true') {
+        $conn->ssl_set(NULL, NULL, NULL, NULL, NULL);
+        $conn->real_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, $db_port, NULL, MYSQLI_CLIENT_SSL);
+    } else {
+        $conn->real_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, $db_port);
+    }
 }
 catch (Throwable $e) {
     // If connection fails, log it and return JSON error if not handled by caller
