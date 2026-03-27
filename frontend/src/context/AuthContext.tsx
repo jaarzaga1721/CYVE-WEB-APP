@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(result.data.user);
             localStorage.setItem('cyve_user', JSON.stringify(result.data.user));
             localStorage.setItem('cyve_token', result.data.token ?? '');
-            window.location.href = '/dashboard';
+            window.location.href = '/profile';
         }
         return { success: result.success, message: result.message };
     };
@@ -88,7 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(result.data.user);
             localStorage.setItem('cyve_user', JSON.stringify(result.data.user));
             localStorage.setItem('cyve_token', result.data.token ?? '');
-            window.location.href = '/dashboard';
+            window.location.href = '/profile';
         }
         return { success: result.success, message: result.message };
     };
