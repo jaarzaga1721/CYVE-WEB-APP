@@ -15,14 +15,16 @@ ini_set('error_log', __DIR__ . '/logs/php_errors.log');
 require_once __DIR__ . '/vendor/autoload.php';
 
 // 2. Load Environment Variables via Dotenv
+// Use safeLoad() to prevent a fatal crash if .env is missing (dashboard ENV will still work)
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+$dotenv->safeLoad();
 
-// 2. Database configuration from $_ENV
-define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
-define('DB_USER', $_ENV['DB_USER'] ?? 'root');
-define('DB_PASS', $_ENV['DB_PASS'] ?? '');
-define('DB_NAME', $_ENV['DB_NAME'] ?? 'cyve');
+// 2. Database configuration
+// Check $_ENV, then $_SERVER, then fall back to defaults
+define('DB_HOST', $_ENV['DB_HOST'] ?? $_SERVER['DB_HOST'] ?? '127.0.0.1');
+define('DB_USER', $_ENV['DB_USER'] ?? $_SERVER['DB_USER'] ?? 'root');
+define('DB_PASS', $_ENV['DB_PASS'] ?? $_SERVER['DB_PASS'] ?? '');
+define('DB_NAME', $_ENV['DB_NAME'] ?? $_SERVER['DB_NAME'] ?? 'cyve');
 
 // 3. Create connection
 try {
