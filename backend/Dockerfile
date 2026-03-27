@@ -3,7 +3,15 @@ FROM php:8.2-apache
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
-# Install mysqli extension
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    zip \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
 # Install Composer
@@ -16,7 +24,7 @@ WORKDIR /var/www/html
 COPY . /var/www/html/
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --verbose --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Update permissions
 RUN chown -R www-data:www-data /var/www/html
