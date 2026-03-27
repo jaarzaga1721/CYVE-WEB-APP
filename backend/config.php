@@ -19,6 +19,17 @@ require_once __DIR__ . '/vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
 
+// Also try loading from /etc/secrets for Render
+if (file_exists('/etc/secrets/.env')) {
+    $dotenv2 = Dotenv\Dotenv::createImmutable('/etc/secrets');
+    $dotenv2->safeLoad();
+}
+
+// Also try loading from /etc/secrets for Render
+if (file_exists('/etc/secrets/.env')) {
+    $dotenv2 = Dotenv\Dotenv::createImmutable('/etc/secrets');
+    $dotenv2->safeLoad();
+}
 // 2. Database configuration
 define('DB_HOST', $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?? '127.0.0.1');
 define('DB_USER', $_ENV['DB_USER'] ?? getenv('DB_USER') ?? 'root');
@@ -31,11 +42,12 @@ $mysql_ssl = $_ENV['MYSQL_SSL'] ?? getenv('MYSQL_SSL') ?? 'false';
 
 try {
     $conn = new mysqli();
-    
+
     if ($mysql_ssl === 'true') {
         $conn->ssl_set(NULL, NULL, NULL, NULL, NULL);
         $conn->real_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, $db_port, NULL, MYSQLI_CLIENT_SSL);
-    } else {
+    }
+    else {
         $conn->real_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, $db_port);
     }
 }
@@ -47,14 +59,14 @@ catch (Throwable $e) {
         http_response_code(200);
         exit(0);
     }
-    
+
     // Note: CORS headers are already set by cors.php
     if (!headers_sent()) {
         header('Content-Type: application/json');
     }
-    
+
     die(json_encode([
-        "success" => false, 
+        "success" => false,
         "message" => "Neural-link database offline. Verify backend status.",
         "timestamp" => time()
     ]));
