@@ -16,7 +16,10 @@ COPY . /var/www/html/
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Copy secret file if it exists
-RUN if [ -f /etc/secrets/.env ]; then cp /etc/secrets/.env /var/www/html/.env; fi
-
 RUN chown -R www-data:www-data /var/www/html
+
+# Create entrypoint script
+RUN echo '#!/bin/bash\nif [ -f /etc/secrets/.env ]; then\n  cp /etc/secrets/.env /var/www/html/.env\n  chown www-data:www-data /var/www/html/.env\nfi\napache2-foreground' > /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
