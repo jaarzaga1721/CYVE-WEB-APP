@@ -2,18 +2,16 @@
 // STEP 1: CORS always comes first — before everything
 require_once __DIR__ . '/cors.php';
 
-// STEP 2: Auth check comes AFTER cors (this fixes the 401 errors)
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['error' => 'Unauthorized', 'code' => 401]);
-    http_response_code(401);
-    exit();
+// STEP 2: Core configuration and common logic
+require_once 'middleware.php';
+
+// STEP 3: Ensure session integrity
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
-require_once 'middleware.php';
-header("Content-Type: application/json");
-
-// Public endpoint - no session check required for viewing the leaderboard
-// though we usually might want one, let's keep it open for now or restrict it if needed.
+// Optional: Auth check if you want it protected, or keep public.
+// Currently keeping it open for the "Labs" and "Homepage" viewers.
 
 use CYVE\Repositories\UserRepository;
 

@@ -20,52 +20,46 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
 
 // 2. Database configuration
-// Check $_ENV, then $_SERVER, then fall back to defaults
-define('DB_HOST', $_ENV['DB_HOST'] ?? $_SERVER['DB_HOST'] ?? '127.0.0.1');
-define('DB_USER', $_ENV['DB_USER'] ?? $_SERVER['DB_USER'] ?? 'root');
-define('DB_PASS', $_ENV['DB_PASS'] ?? $_SERVER['DB_PASS'] ?? '');
-define('DB_NAME', $_ENV['DB_NAME'] ?? $_SERVER['DB_NAME'] ?? 'cyve');
+define('DB_HOST', $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?? '127.0.0.1');
+define('DB_USER', $_ENV['DB_USER'] ?? getenv('DB_USER') ?? 'root');
+define('DB_PASS', $_ENV['DB_PASS'] ?? getenv('DB_PASS') ?? '');
+define('DB_NAME', $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?? 'cyve');
 
 // 3. Create connection
 try {
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 }
 catch (Throwable $e) {
-    // CORS headers for preflight or direct requests when DB is down
-    $origin = $_SERVER['HTTP_ORIGIN'] ?? 'http://localhost:3000';
-    header("Access-Control-Allow-Origin: $origin");
-    header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
-    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-    header("Access-Control-Allow-Credentials: true");
-    header('Content-Type: application/json');
+    // If connection fails, log it and return JSON error if not handled by caller
+    error_log('[CYVE] Database connection failed: ' . $e->getMessage());
 
-    // If it's an OPTIONS request, just exit 200
     if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
         http_response_code(200);
         exit(0);
     }
-
+    
+    // Note: CORS headers are already set by cors.php
+    if (!headers_sent()) {
+        header('Content-Type: application/json');
+    }
+    
     die(json_encode([
-        "success" => false,
-        "message" => "Database connection failed",
-        "timestamp" => time(),
-        "request_id" => uniqid('err_')
+        "success" => false, 
+        "message" => "Neural-link database offline. Verify backend status.",
+        "timestamp" => time()
     ]));
 }
 
 // 5. Check connection
 if ($conn->connect_error) {
-    $origin = $_SERVER['HTTP_ORIGIN'] ?? 'http://localhost:3000';
-    header("Access-Control-Allow-Origin: $origin");
-    header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
-    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-    header("Access-Control-Allow-Credentials: true");
-    header('Content-Type: application/json');
+    error_log('[CYVE] Database connect error: ' . $conn->connect_error);
+    if (!headers_sent()) {
+        header('Content-Type: application/json');
+    }
     die(json_encode([
         "success" => false,
-        "message" => "Database connection failed",
-        "timestamp" => time(),
-        "request_id" => uniqid('err_')
+        "message" => "Database handshake failed.",
+        "timestamp" => time()
     ]));
 }
 
