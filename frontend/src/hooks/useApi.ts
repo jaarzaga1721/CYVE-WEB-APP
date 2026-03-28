@@ -19,8 +19,11 @@ export const useApi = () => {
         setError(null);
 
         try {
-            const baseUrl = process.env.NEXT_PUBLIC_API_URL || API_BASE_URL;
-            const response = await fetch(`${baseUrl}/${endpoint}`, {
+            const rawBaseUrl = process.env.NEXT_PUBLIC_API_URL || API_BASE_URL;
+            const trimmedBaseUrl = rawBaseUrl.replace(/\/+$/g, '');
+            const apiBaseUrl = trimmedBaseUrl.endsWith('/api') ? trimmedBaseUrl : `${trimmedBaseUrl}/api`;
+            const requestEndpoint = endpoint.replace(/^\/+/, '');
+            const response = await fetch(`${apiBaseUrl}/${requestEndpoint}`, {
                 credentials: 'include',
                 ...options,
                 headers: {

@@ -9,7 +9,13 @@ $is_prod = (getenv('APP_ENV') === 'production');
 error_reporting(E_ALL);
 ini_set('display_errors', '0'); // Never output errors to response body
 ini_set('log_errors', '1');
-ini_set('error_log', __DIR__ . '/logs/php_errors.log');
+
+// Ensure the backend logs directory exists so errors can be recorded.
+$logDirectory = __DIR__ . '/logs';
+if (!is_dir($logDirectory)) {
+    @mkdir($logDirectory, 0755, true);
+}
+ini_set('error_log', $logDirectory . '/php_errors.log');
 
 // 1. Load Composer Autoloader (which includes Dotenv)
 require_once __DIR__ . '/vendor/autoload.php';
@@ -40,14 +46,14 @@ if (file_exists('/etc/secrets/.env')) {
 }
 
 // 2. Database configuration
-define('DB_HOST', $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?? '127.0.0.1');
-define('DB_USER', $_ENV['DB_USER'] ?? getenv('DB_USER') ?? 'root');
-define('DB_PASS', $_ENV['DB_PASS'] ?? getenv('DB_PASS') ?? '');
-define('DB_NAME', $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?? 'cyve');
+define('DB_HOST', ($_ENV['DB_HOST'] ?? getenv('DB_HOST')) ?: '127.0.0.1');
+define('DB_USER', ($_ENV['DB_USER'] ?? getenv('DB_USER')) ?: 'root');
+define('DB_PASS', ($_ENV['DB_PASS'] ?? getenv('DB_PASS')) ?: '');
+define('DB_NAME', ($_ENV['DB_NAME'] ?? getenv('DB_NAME')) ?: 'cyve');
 
 // 3. Create connection
-$db_port = intval($_ENV['DB_PORT'] ?? getenv('DB_PORT') ?? 3306);
-$mysql_ssl = $_ENV['MYSQL_SSL'] ?? getenv('MYSQL_SSL') ?? 'false';
+$db_port = intval((($_ENV['DB_PORT'] ?? getenv('DB_PORT')) ?: 3306));
+$mysql_ssl = ($_ENV['MYSQL_SSL'] ?? getenv('MYSQL_SSL')) ?: 'false';
 
 try {
     $conn = new mysqli();
